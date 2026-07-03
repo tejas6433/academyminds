@@ -14,6 +14,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
   const redirect = searchParams.get('redirect');
   const priceId = searchParams.get('priceId');
   const inviteId = searchParams.get('inviteId');
+  const resetOk = searchParams.get('reset') === 'success';
 
   const [state, formAction, pending] = useActionState<ActionState, FormData>(
     mode === 'signin' ? signIn : signUp,
@@ -85,6 +86,12 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               ? 'Start your free trial — no credit card required.'
               : 'Sign in to access your dashboard.'}
           </p>
+
+          {resetOk && !isSignUp && (
+            <div className="mb-5 text-sm p-3 rounded-lg" style={{ background: 'rgba(34,197,94,0.1)', color: '#15803d' }}>
+              Password updated — sign in with your new password.
+            </div>
+          )}
 
           <form action={formAction} className="space-y-4">
             <input type="hidden" name="redirect" value={redirect || ''} />
@@ -175,7 +182,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               <div className="flex justify-between items-center">
                 <Label htmlFor="password" className="text-sm font-medium text-gray-700">Password</Label>
                 {!isSignUp && (
-                  <a href="#" className="text-xs" style={{ color: 'var(--am-purple)' }}>Forgot password?</a>
+                  <Link href="/forgot-password" className="text-xs" style={{ color: 'var(--am-purple)' }}>Forgot password?</Link>
                 )}
               </div>
               <Input id="password" name="password" type="password" placeholder="••••••••" required className="mt-1" />

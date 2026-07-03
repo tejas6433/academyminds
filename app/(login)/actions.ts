@@ -1,7 +1,8 @@
 'use server';
 
 import { z } from 'zod';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, sql, isNull, gt } from 'drizzle-orm';
+import crypto from 'crypto';
 import { db } from '@/lib/db/drizzle';
 import {
   User,
@@ -10,6 +11,8 @@ import {
   teamMembers,
   activityLogs,
   children,
+  subscriptions,
+  passwordResetTokens,
   type NewUser,
   type NewTeam,
   type NewTeamMember,
@@ -27,6 +30,7 @@ import {
   validatedActionWithUser
 } from '@/lib/auth/middleware';
 import { homePathForRole } from '@/lib/auth/guards';
+import { sendWelcomeEmail, sendPasswordResetEmail } from '@/lib/email/resend';
 
 async function logActivity(
   teamId: number | null | undefined,
@@ -233,6 +237,16 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     });
   }
 
+  // If they already paid before creating an account, link that subscription now
+  // (it was stored keyed by email with userId = null; connect it to this user).
+  await db
+    .update(subscriptions)
+    .set({ userId: createdUser.id })
+    .where(and(eq(subscriptions.email, email), isNull(subscriptions.userId)));
+
+  // Fire-and-forget welcome email (never block signup on email delivery).
+  void sendWelcomeEmail(email, name);
+
   const redirectTo = formData.get('redirect') as string | null;
   if (redirectTo === 'checkout') {
     const priceId = formData.get('priceId') as string;
@@ -240,6 +254,81 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   }
 
   redirect(homePathForRole(platformRole));
+});
+
+// ── Password reset ──────────────────────────────────────────────────────────
+
+const RESET_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+function hashToken(raw: string): string {
+  return crypto.createHash('sha256').update(raw).digest('hex');
+}
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email()
+});
+
+/**
+ * Request a reset link. IMPORTANT: we always return the same success message
+ * whether or not the email exists — revealing "no such user" lets attackers
+ * enumerate which emails have accounts. Only send mail if the user is real.
+ */
+export const requestPasswordReset = validatedAction(forgotPasswordSchema, async (data) => {
+  const { email } = data;
+  const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+
+  if (user) {
+    const rawToken = crypto.randomBytes(32).toString('hex'); // sent in the email
+    await db.insert(passwordResetTokens).values({
+      userId: user.id,
+      tokenHash: hashToken(rawToken), // only the hash is stored
+      expiresAt: new Date(Date.now() + RESET_TTL_MS)
+    });
+    const resetUrl = `${process.env.BASE_URL}/reset-password?token=${rawToken}`;
+    void sendPasswordResetEmail(email, resetUrl);
+  }
+
+  return { success: 'If an account exists for that email, a reset link is on its way.' };
+});
+
+const resetPasswordSchema = z
+  .object({
+    token: z.string().min(10),
+    password: z.string().min(8).max(100),
+    confirm: z.string().min(8).max(100)
+  })
+  .refine((d) => d.password === d.confirm, {
+    message: 'Passwords do not match',
+    path: ['confirm']
+  });
+
+export const resetPassword = validatedAction(resetPasswordSchema, async (data) => {
+  const { token, password } = data;
+  const tokenHash = hashToken(token);
+
+  // Valid = matches hash, not used, not expired.
+  const [row] = await db
+    .select()
+    .from(passwordResetTokens)
+    .where(
+      and(
+        eq(passwordResetTokens.tokenHash, tokenHash),
+        isNull(passwordResetTokens.usedAt),
+        gt(passwordResetTokens.expiresAt, new Date())
+      )
+    )
+    .limit(1);
+
+  if (!row) {
+    return { error: 'This reset link is invalid or has expired. Please request a new one.' };
+  }
+
+  const newHash = await hashPassword(password);
+  await db.update(users).set({ passwordHash: newHash, updatedAt: new Date() }).where(eq(users.id, row.userId));
+  // Single-use: burn the token so the same link can't be replayed.
+  await db.update(passwordResetTokens).set({ usedAt: new Date() }).where(eq(passwordResetTokens.id, row.id));
+
+  redirect('/sign-in?reset=success');
 });
 
 export async function signOut() {

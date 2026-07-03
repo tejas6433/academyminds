@@ -145,6 +145,18 @@ export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   user: one(users, { fields: [subscriptions.userId], references: [users.id] }),
 }));
 
+// We store only a SHA-256 hash of the reset token, never the token itself.
+// Single-use (usedAt) + short expiry (expiresAt) limit the blast radius if a
+// row ever leaks — the hash can't be turned back into a working link.
+export const passwordResetTokens = pgTable('password_reset_tokens', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  tokenHash: varchar('token_hash', { length: 64 }).notNull().unique(), // sha256 hex
+  expiresAt: timestamp('expires_at').notNull(),
+  usedAt: timestamp('used_at'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   teamMembers: many(teamMembers),
   invitationsSent: many(invitations),
@@ -225,6 +237,8 @@ export type Child = typeof children.$inferSelect;
 export type NewChild = typeof children.$inferInsert;
 export type Subscription = typeof subscriptions.$inferSelect;
 export type NewSubscription = typeof subscriptions.$inferInsert;
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
+export type NewPasswordResetToken = typeof passwordResetTokens.$inferInsert;
 
 export enum UserRole {
   STUDENT = 'student',
