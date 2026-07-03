@@ -116,10 +116,33 @@ export const recordings = pgTable('recordings', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+// Billing state, synced FROM Stripe by the webhook. Stripe is the source of
+// truth; this table is a queryable local copy so the app can answer
+// "is this person an active subscriber?" without calling Stripe on every request.
+export const subscriptions = pgTable('subscriptions', {
+  id: serial('id').primaryKey(),
+  // Nullable: a parent can pay before creating an account (identified by email),
+  // then get linked to their user row at sign-up.
+  userId: integer('user_id').references(() => users.id),
+  email: varchar('email', { length: 255 }).notNull(),
+  stripeCustomerId: varchar('stripe_customer_id', { length: 255 }).notNull(),
+  // Unique → lets us upsert idempotently on repeated webhook deliveries.
+  stripeSubscriptionId: varchar('stripe_subscription_id', { length: 255 }).notNull().unique(),
+  status: varchar('status', { length: 30 }).notNull(), // active | trialing | past_due | canceled | ...
+  planName: varchar('plan_name', { length: 100 }),
+  currentPeriodEnd: timestamp('current_period_end'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
 export const teamsRelations = relations(teams, ({ many }) => ({
   teamMembers: many(teamMembers),
   activityLogs: many(activityLogs),
   invitations: many(invitations),
+}));
+
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+  user: one(users, { fields: [subscriptions.userId], references: [users.id] }),
 }));
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -200,6 +223,8 @@ export type Recording = typeof recordings.$inferSelect;
 export type NewRecording = typeof recordings.$inferInsert;
 export type Child = typeof children.$inferSelect;
 export type NewChild = typeof children.$inferInsert;
+export type Subscription = typeof subscriptions.$inferSelect;
+export type NewSubscription = typeof subscriptions.$inferInsert;
 
 export enum UserRole {
   STUDENT = 'student',

@@ -9,6 +9,7 @@ import {
   classEnrollments,
   recordings,
   children,
+  subscriptions,
 } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
@@ -149,6 +150,36 @@ export async function getClassesByGrade(grade: number) {
 /** The children a parent registered at sign-up. */
 export async function getChildrenForParent(parentId: number) {
   return db.select().from(children).where(eq(children.parentId, parentId)).orderBy(children.id);
+}
+
+const ACTIVE_STATUSES = ['active', 'trialing'];
+
+/** Most recent subscription row for a user (by linked userId). */
+export async function getSubscriptionForUser(userId: number) {
+  const rows = await db
+    .select()
+    .from(subscriptions)
+    .where(eq(subscriptions.userId, userId))
+    .orderBy(desc(subscriptions.updatedAt))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
+/** True if the user currently has an active or trialing subscription. */
+export async function isUserSubscribed(userId: number) {
+  const sub = await getSubscriptionForUser(userId);
+  return sub != null && ACTIVE_STATUSES.includes(sub.status);
+}
+
+/** Look up a subscription by payer email (used to link a paid-before-signup user). */
+export async function getSubscriptionByEmail(email: string) {
+  const rows = await db
+    .select()
+    .from(subscriptions)
+    .where(eq(subscriptions.email, email))
+    .orderBy(desc(subscriptions.updatedAt))
+    .limit(1);
+  return rows[0] ?? null;
 }
 
 /** Students enrolled in a given class. */

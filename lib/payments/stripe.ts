@@ -1,6 +1,8 @@
 import Stripe from 'stripe';
 import { redirect } from 'next/navigation';
-import { Team } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+import { db } from '@/lib/db/drizzle';
+import { Team, subscriptions, users } from '@/lib/db/schema';
 import {
   getTeamByStripeCustomerId,
   getUser,
@@ -144,6 +146,71 @@ export async function handleSubscriptionChange(
       subscriptionStatus: status
     });
   }
+}
+
+/**
+ * Sync one subscription from Stripe into our `subscriptions` table.
+ *
+ * Called by the webhook for every subscription-related event. It deliberately
+ * IGNORES the event payload and re-reads the subscription straight from Stripe,
+ * then upserts our row. Two properties that gives us for free:
+ *   - Idempotent: Stripe may deliver the same event more than once; re-running
+ *     this just writes the same current state again (no double effects).
+ *   - Order-independent: events can arrive out of order; we always end up with
+ *     Stripe's latest truth, not a stale delta.
+ */
+export async function syncSubscriptionFromStripe(subscriptionId: string) {
+  const sub = await stripe.subscriptions.retrieve(subscriptionId, {
+    expand: ['items.data.price.product', 'customer'],
+  });
+
+  const customer = sub.customer;
+  const customerId = typeof customer === 'string' ? customer : customer.id;
+  const email =
+    typeof customer !== 'string' && !customer.deleted ? customer.email ?? '' : '';
+
+  const product = sub.items.data[0]?.price?.product;
+  const planName =
+    product && typeof product !== 'string' && !('deleted' in product && product.deleted)
+      ? product.name
+      : null;
+
+  const periodEndUnix = (sub as unknown as { current_period_end?: number }).current_period_end;
+  const currentPeriodEnd = periodEndUnix ? new Date(periodEndUnix * 1000) : null;
+
+  // Link to an existing account if the payer already has one (matched by email).
+  let userId: number | null = null;
+  if (email) {
+    const u = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
+    userId = u[0]?.id ?? null;
+  }
+
+  await db
+    .insert(subscriptions)
+    .values({
+      userId,
+      email,
+      stripeCustomerId: customerId,
+      stripeSubscriptionId: sub.id,
+      status: sub.status,
+      planName,
+      currentPeriodEnd,
+      updatedAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: subscriptions.stripeSubscriptionId,
+      set: {
+        userId,
+        email,
+        stripeCustomerId: customerId,
+        status: sub.status,
+        planName,
+        currentPeriodEnd,
+        updatedAt: new Date(),
+      },
+    });
+
+  return { subscriptionId: sub.id, status: sub.status, email };
 }
 
 export async function getStripePrices() {

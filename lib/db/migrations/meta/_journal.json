@@ -29,6 +29,13 @@
       "when": 1781231291933,
       "tag": "0003_chemical_scorpion",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783050556246,
+      "tag": "0004_public_colonel_america",
+      "breakpoints": true
     }
   ]
 }
