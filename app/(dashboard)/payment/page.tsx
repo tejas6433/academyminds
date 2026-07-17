@@ -10,15 +10,17 @@ const PLANS = [
     name: 'Monthly',
     price: '$99.99',
     period: 'CAD / month',
+    billed: '$99.99 / month',
     desc: 'Flexible month-to-month. Cancel anytime.',
     highlight: false,
   },
   {
     id: 'quarterly',
     name: 'Quarterly',
-    price: '$239.99',
-    period: 'CAD / 3 months',
-    desc: 'Best value — most popular with families.',
+    price: '$79.99',
+    period: 'CAD / mo · billed quarterly',
+    billed: '$239.97 every 3 months',
+    desc: 'Best value — a lower monthly rate, billed every 3 months.',
     highlight: true,
   },
 ];
@@ -129,11 +131,11 @@ export default function PaymentPage() {
               onClick={handleCheckout}
               className="am-btn am-btn-primary w-full text-base disabled:opacity-60"
             >
-              {loading ? 'Redirecting to checkout…' : `Continue to payment — ${PLANS.find((p) => p.id === plan)?.price} CAD`}
+              {loading ? 'Redirecting to checkout…' : `Continue to payment — ${PLANS.find((p) => p.id === plan)?.billed}`}
             </button>
 
             <p className="text-center text-[var(--am-ink-400)] text-xs mt-4">
-              Prices in CAD. Applicable GST/HST/PST is calculated at checkout. Secured by Stripe — cancel anytime.
+              Prices in CAD, all-inclusive — no extra tax. Secured by Stripe — cancel anytime.
             </p>
           </div>
 

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/payments/stripe';
 
-// Prices are in Canadian cents. Tax is added at checkout by Stripe Tax.
+// Prices are in Canadian cents, tax-inclusive (no tax added at checkout).
 const PLANS: Record<string, { name: string; amount: number; interval: 'month'; intervalCount: number }> = {
   monthly: { name: 'AcademyMinds — Monthly Plan', amount: 9999, interval: 'month', intervalCount: 1 },
-  quarterly: { name: 'AcademyMinds — Quarterly Plan', amount: 23999, interval: 'month', intervalCount: 3 },
+  quarterly: { name: 'AcademyMinds — Quarterly Plan ($79.99/mo billed quarterly)', amount: 23997, interval: 'month', intervalCount: 3 },
 };
 
 export async function POST(request: NextRequest) {
@@ -19,9 +19,6 @@ export async function POST(request: NextRequest) {
     mode: 'subscription',
     payment_method_types: ['card'],
     customer_email: typeof email === 'string' && email ? email : undefined,
-    // Collect a billing address and let Stripe Tax compute GST/HST/PST per province.
-    billing_address_collection: 'required',
-    automatic_tax: { enabled: true },
     line_items: [
       {
         price_data: {
@@ -29,8 +26,6 @@ export async function POST(request: NextRequest) {
           product_data: { name: selected.name },
           unit_amount: selected.amount,
           recurring: { interval: selected.interval, interval_count: selected.intervalCount },
-          // Price is tax-exclusive; Stripe adds tax on top based on address.
-          tax_behavior: 'exclusive',
         },
         quantity: 1,
       },

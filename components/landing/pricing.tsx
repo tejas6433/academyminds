@@ -19,7 +19,7 @@ const PLANS = [
   {
     name: 'Monthly',
     price: '$99.99',
-    period: 'CAD / month + tax',
+    period: 'CAD / month',
     description: 'Flexible month-to-month. Cancel anytime.',
     features: [
       'Unlimited live classes',
@@ -36,9 +36,9 @@ const PLANS = [
   },
   {
     name: 'Quarterly',
-    price: '$239.99',
-    period: 'CAD / 3 months + tax',
-    description: 'Best value. Locked-in rate for founding families.',
+    price: '$79.99',
+    period: 'CAD / mo · billed $239.97 quarterly',
+    description: 'Best value — a lower monthly rate, billed every 3 months.',
     features: [
       'Unlimited live classes',
       'Math + Coding access',

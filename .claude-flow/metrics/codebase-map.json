@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-07-17T04:15:52.863Z",
+  "projectRoot": "/Users/tejasdutt/academyminds",
+  "structure": {
+    "hasPackageJson": true,
+    "hasTsConfig": true,
+    "hasClaudeConfig": true,
+    "hasClaudeFlow": true
+  },
+  "scannedAt": 1784261752863
+}
