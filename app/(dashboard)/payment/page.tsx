@@ -9,8 +9,8 @@ const PLANS = [
     id: 'monthly',
     name: 'Monthly',
     price: '$99.99',
-    period: 'CAD / month',
-    billed: '$99.99 / month',
+    period: 'CAD/mo',
+    billed: 'Billed $99.99 monthly',
     desc: 'Flexible month-to-month. Cancel anytime.',
     highlight: false,
   },
@@ -18,8 +18,8 @@ const PLANS = [
     id: 'quarterly',
     name: 'Quarterly',
     price: '$79.99',
-    period: 'CAD / mo · billed quarterly',
-    billed: '$239.97 every 3 months',
+    period: 'CAD/mo',
+    billed: 'Billed $239.97 every 3 months',
     desc: 'Best value — a lower monthly rate, billed every 3 months.',
     highlight: true,
   },
@@ -92,10 +92,11 @@ export default function PaymentPage() {
                 <div className="font-extrabold text-xl mb-1" style={{ color: 'var(--am-navy)' }}>
                   {p.name}
                 </div>
-                <div className="mb-2 flex items-end gap-1">
+                <div className="flex items-end gap-1.5">
                   <span className="text-3xl font-extrabold" style={{ color: 'var(--am-purple)' }}>{p.price}</span>
-                  <span className="text-gray-400 mb-0.5 text-sm">{p.period}</span>
+                  <span className="text-[var(--am-ink-400)] mb-1 text-sm font-medium">{p.period}</span>
                 </div>
+                <p className="text-[var(--am-ink-400)] text-xs mt-1 mb-2">{p.billed}</p>
                 <p className="text-gray-500 text-sm">{p.desc}</p>
                 <div className="mt-4 flex items-center gap-2 text-sm font-semibold" style={{ color: plan === p.id ? 'var(--am-purple)' : '#9ca3af' }}>
                   <span
@@ -131,7 +132,7 @@ export default function PaymentPage() {
               onClick={handleCheckout}
               className="am-btn am-btn-primary w-full text-base disabled:opacity-60"
             >
-              {loading ? 'Redirecting to checkout…' : `Continue to payment — ${PLANS.find((p) => p.id === plan)?.billed}`}
+              {loading ? 'Redirecting to checkout…' : 'Continue to secure checkout'}
             </button>
 
             <p className="text-center text-[var(--am-ink-400)] text-xs mt-4">

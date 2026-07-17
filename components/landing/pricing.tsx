@@ -4,6 +4,7 @@ const PLANS = [
     name: 'Free Trial',
     price: '$0',
     period: '1 day free',
+    billingNote: 'No card required',
     description: 'No credit card. Try a real live class today.',
     features: [
       'Full access for 1 day',
@@ -19,7 +20,8 @@ const PLANS = [
   {
     name: 'Monthly',
     price: '$99.99',
-    period: 'CAD / month',
+    period: 'CAD/mo',
+    billingNote: 'Billed monthly · cancel anytime',
     description: 'Flexible month-to-month. Cancel anytime.',
     features: [
       'Unlimited live classes',
@@ -37,7 +39,8 @@ const PLANS = [
   {
     name: 'Quarterly',
     price: '$79.99',
-    period: 'CAD / mo · billed $239.97 quarterly',
+    period: 'CAD/mo',
+    billingNote: 'Billed $239.97 every 3 months',
     description: 'Best value — a lower monthly rate, billed every 3 months.',
     features: [
       'Unlimited live classes',
@@ -92,12 +95,13 @@ export function Pricing() {
                 <h3 className="font-extrabold text-2xl mb-2 tracking-tight" style={{ color: 'var(--am-navy)' }}>
                   {plan.name}
                 </h3>
-                <div className="mb-3 flex items-end gap-1">
+                <div className="flex items-end gap-1.5">
                   <span className="text-5xl font-extrabold tracking-tight" style={{ color: 'var(--am-purple)' }}>
                     {plan.price}
                   </span>
-                  <span className="text-gray-400 mb-1.5 text-sm">{plan.period}</span>
+                  <span className="text-[var(--am-ink-400)] mb-2 text-sm font-medium">{plan.period}</span>
                 </div>
+                <p className="text-[var(--am-ink-400)] text-xs mt-1.5 mb-5">{plan.billingNote}</p>
                 <p className="text-[var(--am-ink-500)] text-sm mb-6">{plan.description}</p>
                 <ul className="space-y-3 mb-8 flex-1">
                   {plan.features.map((f) => (

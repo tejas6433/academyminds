@@ -208,3 +208,11 @@
 [2026-07-17T04:15:52.862Z] [INFO] Daemon started (PID: 13891, CPUs: 8, workers: 7, maxCpuLoad: 6.4, minFreeMemoryPercent: 5%)
 [2026-07-17T04:15:52.863Z] [INFO] Starting worker: map (1/2 concurrent)
 [2026-07-17T04:15:52.863Z] [INFO] Worker map completed in 0ms
+[2026-07-17T04:17:52.870Z] [INFO] Worker audit deferred: Memory too low: 1.9% free
+[2026-07-17T04:19:52.900Z] [INFO] Worker optimize deferred: Memory too low: 4.2% free
+[2026-07-17T04:21:52.900Z] [INFO] Worker consolidate deferred: Memory too low: 1.8% free
+[2026-07-17T04:23:52.909Z] [INFO] Worker testgaps deferred: Memory too low: 3.7% free
+[2026-07-17T04:25:52.896Z] [INFO] Worker backup deferred: Memory too low: 2.0% free
+[2026-07-17T04:27:52.896Z] [INFO] Worker harness deferred: Memory too low: 2.0% free
+[2026-07-17T04:27:52.900Z] [INFO] Worker audit deferred: Memory too low: 1.9% free
+[2026-07-17T04:30:52.893Z] [INFO] Worker map deferred: Memory too low: 3.2% free
