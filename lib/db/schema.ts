@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   integer,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -145,6 +146,19 @@ export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   user: one(users, { fields: [subscriptions.userId], references: [users.id] }),
 }));
 
+// Append-only record of sensitive actions: who did what, to what, when.
+// Never updated or deleted — it's the audit trail admins and compliance rely on.
+export const auditLogs = pgTable('audit_logs', {
+  id: serial('id').primaryKey(),
+  actorId: integer('actor_id').references(() => users.id), // who did it (null = system/webhook)
+  action: varchar('action', { length: 60 }).notNull(), // e.g. 'role.change', 'class.create'
+  targetType: varchar('target_type', { length: 40 }), // 'user' | 'class' | 'subscription' | ...
+  targetId: varchar('target_id', { length: 64 }),
+  metadata: jsonb('metadata'), // before/after values, extra context
+  ipAddress: varchar('ip_address', { length: 45 }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
 // We store only a SHA-256 hash of the reset token, never the token itself.
 // Single-use (usedAt) + short expiry (expiresAt) limit the blast radius if a
 // row ever leaks — the hash can't be turned back into a working link.
@@ -239,6 +253,8 @@ export type Subscription = typeof subscriptions.$inferSelect;
 export type NewSubscription = typeof subscriptions.$inferInsert;
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type NewPasswordResetToken = typeof passwordResetTokens.$inferInsert;
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type NewAuditLog = typeof auditLogs.$inferInsert;
 
 export enum UserRole {
   STUDENT = 'student',

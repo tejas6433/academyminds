@@ -10,6 +10,7 @@ import {
   recordings,
   children,
   subscriptions,
+  auditLogs,
 } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
@@ -207,6 +208,26 @@ export async function getRecordingsForStudent(userId: number) {
 /** All recordings for a class (teacher/admin view, includes unpublished). */
 export async function getRecordingsForClass(classId: number) {
   return db.select().from(recordings).where(eq(recordings.classId, classId)).orderBy(desc(recordings.recordedAt));
+}
+
+/** Recent audit-trail entries with the actor's name (admin view). */
+export async function getAuditLogs(limit = 100) {
+  return db
+    .select({
+      id: auditLogs.id,
+      action: auditLogs.action,
+      targetType: auditLogs.targetType,
+      targetId: auditLogs.targetId,
+      metadata: auditLogs.metadata,
+      ipAddress: auditLogs.ipAddress,
+      createdAt: auditLogs.createdAt,
+      actorName: users.name,
+      actorEmail: users.email,
+    })
+    .from(auditLogs)
+    .leftJoin(users, eq(auditLogs.actorId, users.id))
+    .orderBy(desc(auditLogs.createdAt))
+    .limit(limit);
 }
 
 export async function getUsersByRole(role: string) {

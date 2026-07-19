@@ -43,6 +43,13 @@
       "when": 1783055477886,
       "tag": "0005_mature_vulcan",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784263196271,
+      "tag": "0006_bent_mephistopheles",
+      "breakpoints": true
     }
   ]
 }

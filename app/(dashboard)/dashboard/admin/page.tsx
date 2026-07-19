@@ -1,4 +1,5 @@
 // app/(dashboard)/dashboard/admin/page.tsx
+import Link from 'next/link';
 import { db } from '@/lib/db/drizzle';
 import { users as usersTable } from '@/lib/db/schema';
 import { isNull } from 'drizzle-orm';
@@ -57,12 +58,21 @@ export default async function AdminDashboard() {
 
   return (
     <section className="flex-1 p-4 lg:p-8 max-w-5xl mx-auto w-full">
-      <div className="mb-8">
-        <p className="am-eyebrow mb-2" style={{ color: 'var(--am-purple)' }}>Admin</p>
-        <h1 className="am-heading text-3xl" style={{ color: 'var(--am-navy)' }}>
-          Dashboard
-        </h1>
-        <p className="text-[var(--am-ink-500)] text-sm mt-1.5">Manage classes, teachers, students, and roles.</p>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <p className="am-eyebrow mb-2" style={{ color: 'var(--am-purple)' }}>Admin</p>
+          <h1 className="am-heading text-3xl" style={{ color: 'var(--am-navy)' }}>
+            Dashboard
+          </h1>
+          <p className="text-[var(--am-ink-500)] text-sm mt-1.5">Manage classes, teachers, students, and roles.</p>
+        </div>
+        <Link
+          href="/dashboard/admin/audit"
+          className="am-btn px-4 text-sm shrink-0"
+          style={{ border: '1px solid var(--am-hairline-strong)', color: 'var(--am-ink-700)' }}
+        >
+          Audit log
+        </Link>
       </div>
 
       {/* Stats */}

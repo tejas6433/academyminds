@@ -6,6 +6,7 @@ import { db } from '@/lib/db/drizzle';
 import { classes, classEnrollments, recordings, users } from '@/lib/db/schema';
 import { getUser, getClassById } from '@/lib/db/queries';
 import { createZoomMeeting } from '@/lib/zoom';
+import { logAudit } from '@/lib/audit';
 
 const DAY_TO_ZOOM: Record<number, number> = { 0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7 };
 
@@ -66,8 +67,8 @@ export async function createClass(input: {
   startTimeUtc: string;
   durationMinutes: number;
 }) {
-  await assertRole(['admin']);
-  await db.insert(classes).values({
+  const actor = await assertRole(['admin']);
+  const [created] = await db.insert(classes).values({
     name: input.name,
     subject: input.subject,
     gradeLevel: input.gradeLevel,
@@ -77,6 +78,13 @@ export async function createClass(input: {
     dayOfWeek: input.dayOfWeek,
     startTimeUtc: input.startTimeUtc,
     durationMinutes: input.durationMinutes,
+  }).returning();
+  await logAudit({
+    actorId: actor.id,
+    action: 'class.create',
+    targetType: 'class',
+    targetId: created.id,
+    metadata: { name: input.name, gradeLevel: input.gradeLevel, teacherId: input.teacherId },
   });
   revalidatePath('/dashboard/admin');
   return { ok: true };
@@ -84,32 +92,60 @@ export async function createClass(input: {
 
 /** Admin: assign / reassign a teacher to a class. */
 export async function assignTeacher(classId: number, teacherId: number, teacherName: string) {
-  await assertRole(['admin']);
+  const actor = await assertRole(['admin']);
   await db.update(classes).set({ teacherId, teacherName }).where(eq(classes.id, classId));
+  await logAudit({
+    actorId: actor.id,
+    action: 'class.assign_teacher',
+    targetType: 'class',
+    targetId: classId,
+    metadata: { teacherId, teacherName },
+  });
   revalidatePath('/dashboard/admin');
   return { ok: true };
 }
 
 /** Admin: change a user's platform role. */
 export async function setUserRole(userId: number, role: string) {
-  await assertRole(['admin']);
+  const actor = await assertRole(['admin']);
+  const [before] = await db.select({ role: users.role }).from(users).where(eq(users.id, userId)).limit(1);
   await db.update(users).set({ role }).where(eq(users.id, userId));
+  await logAudit({
+    actorId: actor.id,
+    action: 'role.change',
+    targetType: 'user',
+    targetId: userId,
+    metadata: { from: before?.role ?? null, to: role },
+  });
   revalidatePath('/dashboard/admin');
   return { ok: true };
 }
 
 /** Admin: enroll a student into a class. */
 export async function enrollStudent(classId: number, studentId: number) {
-  await assertRole(['admin']);
+  const actor = await assertRole(['admin']);
   await db.insert(classEnrollments).values({ classId, userId: studentId });
+  await logAudit({
+    actorId: actor.id,
+    action: 'enrollment.create',
+    targetType: 'class',
+    targetId: classId,
+    metadata: { studentId },
+  });
   revalidatePath('/dashboard/admin');
   return { ok: true };
 }
 
 /** Teacher or admin: toggle a recording's visibility to students. */
 export async function setRecordingPublished(recordingId: number, published: boolean) {
-  await assertRole(['teacher', 'admin']);
+  const actor = await assertRole(['teacher', 'admin']);
   await db.update(recordings).set({ published: published ? 1 : 0 }).where(eq(recordings.id, recordingId));
+  await logAudit({
+    actorId: actor.id,
+    action: published ? 'recording.publish' : 'recording.hide',
+    targetType: 'recording',
+    targetId: recordingId,
+  });
   revalidatePath('/dashboard/teacher');
   revalidatePath('/dashboard/admin');
   return { ok: true };
