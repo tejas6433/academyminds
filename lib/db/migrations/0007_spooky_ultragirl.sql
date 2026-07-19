@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "parental_consent_at" timestamp;

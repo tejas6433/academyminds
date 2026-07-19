@@ -188,6 +188,24 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               <Input id="password" name="password" type="password" placeholder="••••••••" required className="mt-1" />
             </div>
 
+            {isSignUp && (
+              <label className="flex items-start gap-2.5 text-xs text-[var(--am-ink-500)] leading-relaxed cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="consent"
+                  required
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--am-purple)]"
+                />
+                <span>
+                  I&apos;m the parent or legal guardian, and I agree to the{' '}
+                  <Link href="/terms" target="_blank" className="underline" style={{ color: 'var(--am-purple)' }}>Terms</Link>{' '}
+                  and{' '}
+                  <Link href="/privacy" target="_blank" className="underline" style={{ color: 'var(--am-purple)' }}>Privacy Policy</Link>,
+                  including collecting my child&apos;s information.
+                </span>
+              </label>
+            )}
+
             {state?.error && (
               <p className="text-red-500 text-sm">{state.error}</p>
             )}

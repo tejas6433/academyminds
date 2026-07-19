@@ -50,6 +50,13 @@
       "when": 1784263196271,
       "tag": "0006_bent_mephistopheles",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784435852849,
+      "tag": "0007_spooky_ultragirl",
+      "breakpoints": true
     }
   ]
 }

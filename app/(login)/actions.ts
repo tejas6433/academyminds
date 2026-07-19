@@ -114,7 +114,9 @@ const signUpSchema = z.object({
   accountType: z.enum(['parent', 'student']).optional(),
   childName: z.string().optional(),
   childGrade: z.coerce.number().int().min(5).max(7).optional(),
-  subjectInterest: z.enum(['math', 'coding', 'both']).optional()
+  subjectInterest: z.enum(['math', 'coding', 'both']).optional(),
+  // Checkbox posts 'on' when ticked. Required — no account without consent.
+  consent: z.literal('on', { errorMap: () => ({ message: 'Please confirm you agree and have guardian consent.' }) })
 });
 
 export const signUp = validatedAction(signUpSchema, async (data, formData) => {
@@ -143,7 +145,8 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     name: name || undefined,
     email,
     passwordHash,
-    role: platformRole
+    role: platformRole,
+    parentalConsentAt: new Date() // schema guarantees the box was ticked
   };
 
   const [createdUser] = await db.insert(users).values(newUser).returning();

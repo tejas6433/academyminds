@@ -61,7 +61,10 @@ export function Footer() {
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-gray-500 text-sm">© 2026 AcademyMinds. All rights reserved.</p>
-          <p className="text-gray-500 text-sm">Grade 5–7 · Math &amp; Coding · Live classes</p>
+          <div className="flex items-center gap-5 text-sm">
+            <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacy</Link>
+            <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">Terms</Link>
+          </div>
         </div>
       </div>
     </footer>
