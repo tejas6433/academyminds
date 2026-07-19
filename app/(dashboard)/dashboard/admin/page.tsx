@@ -144,6 +144,7 @@ export default async function AdminDashboard() {
               <th className="py-3.5 px-5 font-bold">Name</th>
               <th className="py-3.5 px-5 font-bold">Email</th>
               <th className="py-3.5 px-5 font-bold">Role</th>
+              <th className="py-3.5 px-5 font-bold">Actions</th>
             </tr>
           </thead>
           <tbody>

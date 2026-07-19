@@ -393,3 +393,4 @@
 [2026-07-19T04:35:17.346Z] [INFO] Daemon started (PID: 32517, CPUs: 8, workers: 7, maxCpuLoad: 6.4, minFreeMemoryPercent: 5%)
 [2026-07-19T04:35:17.347Z] [INFO] Worker map deferred: CPU load too high: 45.90
 [2026-07-19T04:37:17.343Z] [INFO] Worker audit deferred: CPU load too high: 8.32
+[2026-07-19T04:39:17.337Z] [INFO] Worker optimize deferred: Memory too low: 1.0% free
