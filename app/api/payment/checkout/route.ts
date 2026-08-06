@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { stripe } from '@/lib/payments/stripe';
 import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 // Prices are in Canadian cents, tax-inclusive (no tax added at checkout).
-const PLANS: Record<string, { name: string; amount: number; interval: 'month'; intervalCount: number }> = {
-  monthly: { name: 'AcademyMinds — Monthly Plan', amount: 9999, interval: 'month', intervalCount: 1 },
-  quarterly: { name: 'AcademyMinds — Quarterly Plan ($79.99/mo billed quarterly)', amount: 23997, interval: 'month', intervalCount: 3 },
-};
+// Deliberately a Map, not an object literal: an object literal inherits from
+// Object.prototype, so PLANS["__proto__"] and PLANS["constructor"] both return
+// truthy values and slip past a `!selected` guard, reaching the Stripe call
+// with undefined name/amount. A Map has no prototype chain to walk.
+const PLANS = new Map<string, { name: string; amount: number; interval: 'month'; intervalCount: number }>([
+  ['monthly', { name: 'AcademyMinds — Monthly Plan', amount: 9999, interval: 'month', intervalCount: 1 }],
+  ['quarterly', { name: 'AcademyMinds — Quarterly Plan ($79.99/mo billed quarterly)', amount: 23997, interval: 'month', intervalCount: 3 }],
+]);
+
+// Validate at the boundary so only known plan ids reach the lookup at all.
+const checkoutSchema = z.object({
+  plan: z.enum(['monthly', 'quarterly']),
+  email: z.string().email().max(255).optional(),
+});
 
 export async function POST(request: NextRequest) {
   // Unauthenticated endpoint that calls the Stripe API on every hit — throttle
@@ -19,15 +30,20 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let plan: unknown;
-  let email: unknown;
+  let body: unknown;
   try {
-    ({ plan, email } = await request.json());
+    body = await request.json();
   } catch {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 
-  const selected = typeof plan === 'string' ? PLANS[plan] : undefined;
+  const parsed = checkoutSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
+  }
+  const { plan, email } = parsed.data;
+
+  const selected = PLANS.get(plan);
   if (!selected) {
     return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
   }
@@ -36,7 +52,7 @@ export async function POST(request: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
-      customer_email: typeof email === 'string' && email ? email : undefined,
+      customer_email: email || undefined,
       line_items: [
         {
           price_data: {
