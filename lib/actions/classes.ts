@@ -110,8 +110,22 @@ export async function assignTeacher(classId: number, teacherId: number, teacherN
 }
 
 /** Admin: change a user's platform role. */
+const ASSIGNABLE_ROLES = ['admin', 'teacher', 'parent', 'student'] as const;
+
 export async function setUserRole(userId: number, role: string) {
   const actor = await assertRole(['admin']);
+
+  // Only known roles may be assigned — an arbitrary string would silently create
+  // a user who matches no guard and can reach nothing.
+  if (!ASSIGNABLE_ROLES.includes(role as (typeof ASSIGNABLE_ROLES)[number])) {
+    throw new Error('Invalid role');
+  }
+  // An admin demoting themselves would be locked out of the admin area with no
+  // way back in (deleteUser guards self-deletion for the same reason).
+  if (actor.id === userId && role !== 'admin') {
+    throw new Error('You cannot change your own admin role.');
+  }
+
   const [before] = await db.select({ role: users.role }).from(users).where(eq(users.id, userId)).limit(1);
   await db.update(users).set({ role }).where(eq(users.id, userId));
   await logAudit({
@@ -156,22 +170,27 @@ export async function createStudentAccount(input: {
   const tempPassword = randomBytes(9).toString('base64url'); // ~12 chars, URL-safe
   const passwordHash = await hashPassword(tempPassword);
 
-  const [student] = await db
-    .insert(users)
-    .values({
-      name: studentName,
-      email: studentEmail,
-      passwordHash,
-      role: 'student',
-      // Parent already consented at signup/payment; recording it on the child
-      // account keeps the PIPEDA trail complete.
-      parentalConsentAt: new Date(),
-    })
-    .returning({ id: users.id });
+  // Account + enrolment commit together, so a failed enrolment can't leave a
+  // student account stranded outside the class it was created for.
+  const student = await db.transaction(async (tx) => {
+    const [created] = await tx
+      .insert(users)
+      .values({
+        name: studentName,
+        email: studentEmail,
+        passwordHash,
+        role: 'student',
+        // Parent already consented at signup/payment; recording it on the child
+        // account keeps the PIPEDA trail complete.
+        parentalConsentAt: new Date(),
+      })
+      .returning({ id: users.id });
 
-  if (input.classId) {
-    await db.insert(classEnrollments).values({ classId: input.classId, userId: student.id });
-  }
+    if (input.classId) {
+      await tx.insert(classEnrollments).values({ classId: input.classId, userId: created.id });
+    }
+    return created;
+  });
 
   await logAudit({
     actorId: actor.id,
@@ -258,20 +277,31 @@ export async function deleteClass(classId: number) {
   const cls = await getClassById(classId);
   if (!cls) return { ok: false as const, error: 'Class not found.' };
 
-  // Delete the class's recordings' stored files (best-effort), then their rows.
-  const recs = await db.select().from(recordings).where(eq(recordings.classId, classId));
+  // Collect stored-file keys before the rows go away.
+  const recs = await db
+    .select({ id: recordings.id, r2Key: recordings.r2Key })
+    .from(recordings)
+    .where(eq(recordings.classId, classId));
+
+  // All row deletions commit together — a failure part-way leaves the class
+  // fully intact rather than half-deleted with orphaned enrollments.
+  await db.transaction(async (tx) => {
+    await tx.delete(recordings).where(eq(recordings.classId, classId));
+    await tx.delete(classEnrollments).where(eq(classEnrollments.classId, classId));
+    await tx.delete(classes).where(eq(classes.id, classId));
+  });
+
+  // Storage cleanup runs only after the DB commit — external calls can't take
+  // part in the transaction, and deleting files for a rollback we then undid
+  // would destroy videos we still had rows for. Orphaned objects are logged.
   for (const r of recs) {
-    if (r.r2Key) {
-      try {
-        await deleteFromR2(r.r2Key);
-      } catch (err) {
-        console.error(`[deleteClass] R2 delete failed for recording ${r.id}:`, err);
-      }
+    if (!r.r2Key) continue;
+    try {
+      await deleteFromR2(r.r2Key);
+    } catch (err) {
+      console.error(`[deleteClass] R2 delete failed for recording ${r.id} (${r.r2Key}):`, err);
     }
   }
-  await db.delete(recordings).where(eq(recordings.classId, classId));
-  await db.delete(classEnrollments).where(eq(classEnrollments.classId, classId));
-  await db.delete(classes).where(eq(classes.id, classId));
 
   await logAudit({
     actorId: actor.id,
@@ -287,6 +317,23 @@ export async function deleteClass(classId: number) {
 /** Teacher or admin: toggle a recording's visibility to students. */
 export async function setRecordingPublished(recordingId: number, published: boolean) {
   const actor = await assertRole(['teacher', 'admin']);
+
+  // IDOR guard: a teacher may only touch recordings belonging to a class they
+  // teach. Without this, any teacher could publish or hide another teacher's
+  // recordings by passing an arbitrary id.
+  const [rec] = await db
+    .select({ classId: recordings.classId })
+    .from(recordings)
+    .where(eq(recordings.id, recordingId))
+    .limit(1);
+  if (!rec) throw new Error('Recording not found');
+  if (actor.role === 'teacher') {
+    const cls = await getClassById(rec.classId);
+    if (!cls || cls.teacherId !== actor.id) {
+      throw new Error('Not your class');
+    }
+  }
+
   await db.update(recordings).set({ published: published ? 1 : 0 }).where(eq(recordings.id, recordingId));
   await logAudit({
     actorId: actor.id,
