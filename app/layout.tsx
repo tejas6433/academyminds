@@ -4,9 +4,30 @@ import { Inter, Fraunces } from 'next/font/google';
 import { getUser, getTeamForUser } from '@/lib/db/queries';
 import { SWRConfig } from 'swr';
 
+const SITE_DESCRIPTION =
+  'Live small-group math and coding classes for Grade 5–7, taught by experienced educators on the Indian curriculum — typically 2–3 years ahead of Canadian grade level.';
+
 export const metadata: Metadata = {
-  title: 'AcademyMinds — live math & coding for Grade 5–7',
-  description: 'Live small-group math and coding classes for Grade 5–7, taught by experienced educators on the Indian curriculum — typically 2–3 years ahead of Canadian grade level.'
+  metadataBase: new URL(process.env.BASE_URL || 'http://localhost:3000'),
+  title: {
+    default: 'AcademyMinds — live math & coding for Grade 5–7',
+    template: '%s · AcademyMinds',
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: 'AcademyMinds',
+  openGraph: {
+    type: 'website',
+    siteName: 'AcademyMinds',
+    title: 'AcademyMinds — live math & coding for Grade 5–7',
+    description: SITE_DESCRIPTION,
+    url: '/',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'AcademyMinds — live math & coding for Grade 5–7',
+    description: SITE_DESCRIPTION,
+  },
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
