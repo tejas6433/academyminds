@@ -7,6 +7,7 @@ import {
   integer,
   bigint,
   jsonb,
+  index,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -142,7 +143,14 @@ export const recordings = pgTable('recordings', {
   expiresAt: timestamp('expires_at'),
 
   createdAt: timestamp('created_at').notNull().defaultNow(),
-});
+}, (t) => ({
+  // Student/teacher listing: "published recordings for these classes".
+  classPublishedIdx: index('recordings_class_published_idx').on(t.classId, t.published),
+  // Retention cron scans by expiry.
+  expiresAtIdx: index('recordings_expires_at_idx').on(t.expiresAt),
+  // Transfer worker sweeps by status.
+  statusIdx: index('recordings_status_idx').on(t.status),
+}));
 
 // Billing state, synced FROM Stripe by the webhook. Stripe is the source of
 // truth; this table is a queryable local copy so the app can answer
