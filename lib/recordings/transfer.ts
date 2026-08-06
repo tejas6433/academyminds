@@ -11,6 +11,7 @@
 //     download token expires (~24h). Nothing is lost to a single failure.
 
 import { Readable } from 'stream';
+import type { ReadableStream as NodeReadableStream } from 'stream/web';
 import { and, eq, lt, isNotNull, sql } from 'drizzle-orm';
 import { db } from '@/lib/db/drizzle';
 import { recordings } from '@/lib/db/schema';
@@ -63,7 +64,10 @@ export async function transferRecording(
 
   try {
     const webStream = await fetchZoomRecordingStream(rec.zoomDownloadUrl!, rec.zoomDownloadToken!);
-    const nodeStream = Readable.fromWeb(webStream as any);
+    // fetch() yields the DOM ReadableStream type while Readable.fromWeb expects
+    // Node's structurally identical stream/web type. Cast to the precise target
+    // type rather than `any` so a genuine mismatch would still be caught.
+    const nodeStream = Readable.fromWeb(webStream as NodeReadableStream<Uint8Array>);
     const key = objectKey(rec.classId, rec.id, rec.recordedAt);
 
     const { sizeBytes } = await uploadStreamToR2(key, nodeStream, 'video/mp4');

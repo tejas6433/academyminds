@@ -11,9 +11,18 @@ export default async function ParentDashboard() {
   const user = await requireRole(['parent']);
   const kids = await getChildrenForParent(user.id);
 
+  // Fetch each DISTINCT grade once. Two kids in the same grade previously ran
+  // the identical query twice.
+  const grades = [...new Set(kids.map((k) => k.gradeLevel))];
+  const classesByGrade = new Map(
+    await Promise.all(
+      grades.map(async (g) => [g, await getClassesByGrade(g)] as const)
+    )
+  );
+
   const children = await Promise.all(
     kids.map(async (k) => {
-      const classes = await getClassesByGrade(k.gradeLevel);
+      const classes = classesByGrade.get(k.gradeLevel) ?? [];
       const next = nextClassInstance(classes);
       const today = todaysClasses(classes);
       return {

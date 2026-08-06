@@ -6,7 +6,10 @@ import { redirect } from 'next/navigation';
 export type ActionState = {
   error?: string;
   success?: string;
-  [key: string]: any; // This allows for additional properties
+  // Actions echo submitted form values back so the client can repopulate the
+  // form after a failure (e.g. email/password). Those are always strings, so
+  // this stays narrow rather than falling back to `any`.
+  [key: string]: string | undefined;
 };
 
 type ValidatedActionFunction<S extends z.ZodType<any, any>, T> = (

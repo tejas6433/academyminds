@@ -8,6 +8,7 @@ import {
   bigint,
   jsonb,
   index,
+  unique,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -150,6 +151,14 @@ export const recordings = pgTable('recordings', {
   expiresAtIdx: index('recordings_expires_at_idx').on(t.expiresAt),
   // Transfer worker sweeps by status.
   statusIdx: index('recordings_status_idx').on(t.status),
+  // Idempotency for Zoom webhook retries. Zoom redelivers events, and a
+  // check-then-insert is a race: two concurrent deliveries can both see "not
+  // present" and both insert. This constraint makes the database the arbiter,
+  // so the insert can use onConflictDoNothing and be atomically idempotent.
+  meetingRecordedAtUnique: unique('recordings_meeting_recorded_at_unique').on(
+    t.zoomMeetingId,
+    t.recordedAt
+  ),
 }));
 
 // Billing state, synced FROM Stripe by the webhook. Stripe is the source of

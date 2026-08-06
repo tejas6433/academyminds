@@ -27,7 +27,8 @@ import { createCheckoutSession } from '@/lib/payments/stripe';
 import { getUser, getUserWithTeam } from '@/lib/db/queries';
 import {
   validatedAction,
-  validatedActionWithUser
+  validatedActionWithUser,
+  type ActionState
 } from '@/lib/auth/middleware';
 import { homePathForRole } from '@/lib/auth/guards';
 import { sendWelcomeEmail, sendPasswordResetEmail } from '@/lib/email/resend';
@@ -56,7 +57,10 @@ const signInSchema = z.object({
   password: z.string().min(8).max(100)
 });
 
-export const signIn = validatedAction(signInSchema, async (data, formData) => {
+// Explicit return type: these actions end in redirect() (which never returns),
+// and without the annotation TypeScript widens the result to include `void`,
+// which no longer matches the narrowed ActionState the form state expects.
+export const signIn = validatedAction(signInSchema, async (data, formData): Promise<ActionState> => {
   const { email, password } = data;
 
   // Brute-force guard. Keyed on the target email so an attacker can't grind one
@@ -111,10 +115,14 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
     logActivity(foundTeam?.id, foundUser.id, ActivityType.SIGN_IN)
   ]);
 
-  const redirectTo = formData.get('redirect') as string | null;
+  const redirectTo = formData.get('redirect');
   if (redirectTo === 'checkout') {
-    const priceId = formData.get('priceId') as string;
-    return createCheckoutSession({ team: foundTeam, priceId });
+    const priceId = formData.get('priceId');
+    if (typeof priceId === 'string' && priceId) {
+      // Always redirects internally; awaiting keeps this action's return type
+      // honest (ActionState) instead of leaking a void branch to the client.
+      await createCheckoutSession({ team: foundTeam, priceId });
+    }
   }
 
   redirect(homePathForRole(foundUser.role));
@@ -133,7 +141,7 @@ const signUpSchema = z.object({
   consent: z.literal('on', { errorMap: () => ({ message: 'Please confirm you agree and have guardian consent.' }) })
 });
 
-export const signUp = validatedAction(signUpSchema, async (data, formData) => {
+export const signUp = validatedAction(signUpSchema, async (data, formData): Promise<ActionState> => {
   const { email, password, inviteId, name, accountType, childName, childGrade, subjectInterest } = data;
 
   // Cap account creation per host — each signup also sends a welcome email.
@@ -274,10 +282,12 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   // Fire-and-forget welcome email (never block signup on email delivery).
   void sendWelcomeEmail(email, name);
 
-  const redirectTo = formData.get('redirect') as string | null;
+  const redirectTo = formData.get('redirect');
   if (redirectTo === 'checkout') {
-    const priceId = formData.get('priceId') as string;
-    return createCheckoutSession({ team: createdTeam, priceId });
+    const priceId = formData.get('priceId');
+    if (typeof priceId === 'string' && priceId) {
+      await createCheckoutSession({ team: createdTeam, priceId });
+    }
   }
 
   redirect(homePathForRole(platformRole));

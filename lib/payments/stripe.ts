@@ -36,7 +36,9 @@ export async function createCheckoutSession({
     ],
     mode: 'subscription',
     success_url: `${process.env.BASE_URL}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.BASE_URL}/pricing`,
+    // The standalone /pricing page was removed; pricing now lives on the
+    // landing page, so a cancelled checkout returns there rather than 404ing.
+    cancel_url: `${process.env.BASE_URL}/#pricing`,
     customer: team.stripeCustomerId || undefined,
     client_reference_id: user.id.toString(),
     allow_promotion_codes: true,

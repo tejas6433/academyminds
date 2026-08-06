@@ -1,8 +1,8 @@
 // app/(dashboard)/dashboard/teacher/page.tsx
 import {
   getClassesForTeacher,
-  getStudentsForClass,
-  getRecordingsForClass,
+  getStudentsForClasses,
+  getRecordingsForClasses,
 } from '@/lib/db/queries';
 import { requireRole } from '@/lib/auth/guards';
 import { TeacherClassCard } from '@/components/dashboard/teacher-class-card';
@@ -13,21 +13,27 @@ export default async function TeacherDashboard() {
 
   const myClasses = await getClassesForTeacher(user.id);
 
-  const enriched = await Promise.all(
-    myClasses.map(async (cls) => ({
-      cls,
-      students: await getStudentsForClass(cls.id),
-      recordings: (await getRecordingsForClass(cls.id)).map((r) => ({
-        id: r.id,
-        title: r.title,
-        playUrl: r.playUrl,
-        status: r.status,
-        durationMinutes: r.durationMinutes,
-        recordedAt: r.recordedAt.toISOString(),
-        published: r.published,
-      })),
-    }))
-  );
+  // Two batched queries for ALL classes rather than two per class — a teacher
+  // with 10 classes went from 21 round trips to 3.
+  const classIds = myClasses.map((c) => c.id);
+  const [studentsByClass, recordingsByClass] = await Promise.all([
+    getStudentsForClasses(classIds),
+    getRecordingsForClasses(classIds),
+  ]);
+
+  const enriched = myClasses.map((cls) => ({
+    cls,
+    students: studentsByClass.get(cls.id) ?? [],
+    recordings: (recordingsByClass.get(cls.id) ?? []).map((r) => ({
+      id: r.id,
+      title: r.title,
+      playUrl: r.playUrl,
+      status: r.status,
+      durationMinutes: r.durationMinutes,
+      recordedAt: r.recordedAt.toISOString(),
+      published: r.published,
+    })),
+  }));
 
   const zoomReady = isZoomConfigured();
 

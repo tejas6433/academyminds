@@ -1,0 +1,1 @@
+ALTER TABLE "recordings" ADD CONSTRAINT "recordings_meeting_recorded_at_unique" UNIQUE("zoom_meeting_id","recorded_at");

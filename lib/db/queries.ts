@@ -229,6 +229,57 @@ export async function getRecordingsForClass(classId: number) {
   return db.select().from(recordings).where(eq(recordings.classId, classId)).orderBy(desc(recordings.recordedAt));
 }
 
+/**
+ * Students for MANY classes in one query, grouped by class id.
+ * Avoids the N+1 of calling getStudentsForClass once per class.
+ */
+export async function getStudentsForClasses(classIds: number[]) {
+  const grouped = new Map<number, { id: number; name: string | null; email: string }[]>();
+  if (classIds.length === 0) return grouped;
+
+  const rows = await db
+    .select({
+      classId: classEnrollments.classId,
+      id: users.id,
+      name: users.name,
+      email: users.email,
+    })
+    .from(classEnrollments)
+    .innerJoin(users, eq(classEnrollments.userId, users.id))
+    .where(inArray(classEnrollments.classId, classIds));
+
+  for (const r of rows) {
+    const list = grouped.get(r.classId);
+    const student = { id: r.id, name: r.name, email: r.email };
+    if (list) list.push(student);
+    else grouped.set(r.classId, [student]);
+  }
+  return grouped;
+}
+
+/**
+ * Recordings for MANY classes in one query, grouped by class id.
+ * Avoids the N+1 of calling getRecordingsForClass once per class.
+ */
+export async function getRecordingsForClasses(classIds: number[]) {
+  type Recording = typeof recordings.$inferSelect;
+  const out = new Map<number, Recording[]>();
+  if (classIds.length === 0) return out;
+
+  const rows = await db
+    .select()
+    .from(recordings)
+    .where(inArray(recordings.classId, classIds))
+    .orderBy(desc(recordings.recordedAt));
+
+  for (const r of rows) {
+    const list = out.get(r.classId);
+    if (list) list.push(r);
+    else out.set(r.classId, [r]);
+  }
+  return out;
+}
+
 /** Recent audit-trail entries with the actor's name (admin view). */
 export async function getAuditLogs(limit = 100) {
   return db
