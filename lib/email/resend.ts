@@ -90,6 +90,25 @@ export function sendPasswordResetEmail(to: string, resetUrl: string) {
   });
 }
 
+/** Sent to a teacher when an admin creates their account. */
+export function sendTeacherCredentialsEmail(
+  to: string,
+  teacher: { name: string; email: string; tempPassword: string }
+) {
+  return sendEmail({
+    to,
+    subject: 'Your AcademyMinds teacher account',
+    html: shell(
+      `Welcome to the team, ${teacher.name} 👋`,
+      `Your teacher account is ready. Sign in to see your classes, start live sessions, and manage recordings.<br/><br/>
+       <strong>Email:</strong> ${teacher.email}<br/>
+       <strong>Temporary password:</strong> ${teacher.tempPassword}<br/><br/>
+       Please change your password after the first sign-in.`,
+      { label: 'Sign in', url: `${process.env.BASE_URL}/sign-in` }
+    ),
+  });
+}
+
 /** Sent to the parent when an admin creates their child's student login. */
 export function sendStudentCredentialsEmail(
   parentEmail: string,

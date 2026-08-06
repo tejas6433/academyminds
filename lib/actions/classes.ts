@@ -8,7 +8,7 @@ import { getUser, getClassById } from '@/lib/db/queries';
 import { createZoomMeeting } from '@/lib/zoom';
 import { logAudit } from '@/lib/audit';
 import { hashPassword } from '@/lib/auth/session';
-import { sendStudentCredentialsEmail } from '@/lib/email/resend';
+import { sendStudentCredentialsEmail, sendTeacherCredentialsEmail } from '@/lib/email/resend';
 import { randomBytes } from 'crypto';
 
 const DAY_TO_ZOOM: Record<number, number> = { 0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7 };
@@ -189,6 +189,45 @@ export async function createStudentAccount(input: {
 
   revalidatePath('/dashboard/admin/customers');
   return { ok: true as const, studentId: student.id };
+}
+
+/**
+ * Admin: create a teacher login and email the credentials to the teacher.
+ * Saves the "sign up then get promoted" dance — the teacher can sign in directly.
+ */
+export async function createTeacherAccount(input: { name: string; email: string }) {
+  const actor = await assertRole(['admin']);
+  const name = input.name.trim();
+  const email = input.email.trim().toLowerCase();
+
+  if (!name || !email) {
+    return { ok: false as const, error: 'Name and email are both required.' };
+  }
+
+  const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
+  if (existing[0]) {
+    return { ok: false as const, error: 'A user with that email already exists.' };
+  }
+
+  const tempPassword = randomBytes(9).toString('base64url');
+  const passwordHash = await hashPassword(tempPassword);
+
+  const [teacher] = await db
+    .insert(users)
+    .values({ name, email, passwordHash, role: 'teacher' })
+    .returning({ id: users.id });
+
+  await logAudit({
+    actorId: actor.id,
+    action: 'teacher.create',
+    targetType: 'user',
+    targetId: teacher.id,
+  });
+
+  await sendTeacherCredentialsEmail(email, { name, email, tempPassword });
+
+  revalidatePath('/dashboard/admin');
+  return { ok: true as const, teacherId: teacher.id };
 }
 
 /** Admin: enroll a student into a class. */
