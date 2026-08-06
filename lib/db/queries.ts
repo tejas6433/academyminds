@@ -1,4 +1,4 @@
-import { desc, and, eq, isNull, inArray } from 'drizzle-orm';
+import { desc, and, eq, isNull, inArray, or, gt } from 'drizzle-orm';
 import { db } from './drizzle';
 import {
   activityLogs,
@@ -198,11 +198,25 @@ export async function getRecordingsForStudent(userId: number) {
   const enrolled = await getClassesForStudent(userId);
   const classIds = enrolled.map((c) => c.id);
   if (classIds.length === 0) return [];
+  const now = new Date();
   return db
     .select()
     .from(recordings)
-    .where(and(inArray(recordings.classId, classIds), eq(recordings.published, 1)))
+    .where(
+      and(
+        inArray(recordings.classId, classIds),
+        eq(recordings.published, 1),
+        // Hide anything already past its 30-day expiry (the retention cron may
+        // not have physically purged it yet).
+        or(isNull(recordings.expiresAt), gt(recordings.expiresAt, now))
+      )
+    )
     .orderBy(desc(recordings.recordedAt));
+}
+
+export async function getRecordingById(recordingId: number) {
+  const rows = await db.select().from(recordings).where(eq(recordings.id, recordingId)).limit(1);
+  return rows[0] ?? null;
 }
 
 /** All recordings for a class (teacher/admin view, includes unpublished). */

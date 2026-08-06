@@ -148,6 +148,47 @@ export interface ZoomRecordingFile {
 }
 
 /**
+ * Delete a meeting's cloud recordings from Zoom. Called AFTER we've copied the
+ * MP4 to our own R2 bucket — this frees Zoom cloud storage immediately so it
+ * never fills up (Zoom cloud is small + billed; R2 is our cheap durable home).
+ * `action=delete` hard-deletes (safe: we already have our own copy).
+ */
+export async function deleteZoomRecording(meetingId: string): Promise<void> {
+  if (!isZoomConfigured()) return; // no-op in dev
+  const token = await getAccessToken();
+  const res = await fetch(`${ZOOM_API_BASE}/meetings/${meetingId}/recordings?action=delete`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  // 200/204 = deleted, 404 = already gone. Anything else is a real error.
+  if (!res.ok && res.status !== 404) {
+    const body = await res.text();
+    throw new Error(`Zoom delete recording failed: ${res.status} ${body}`);
+  }
+}
+
+/**
+ * Open an authenticated stream to a Zoom recording file. Zoom's per-event
+ * `download_token` (sibling of `payload` in the webhook body) authorizes the
+ * download for ~24h. Returns the response body as a Node Readable for piping
+ * straight into R2 without buffering the whole file.
+ */
+export async function fetchZoomRecordingStream(
+  downloadUrl: string,
+  downloadToken: string
+): Promise<ReadableStream<Uint8Array>> {
+  const res = await fetch(downloadUrl, {
+    headers: { Authorization: `Bearer ${downloadToken}` },
+    redirect: 'follow',
+  });
+  if (!res.ok || !res.body) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`Zoom recording download failed: ${res.status} ${body}`);
+  }
+  return res.body;
+}
+
+/**
  * Verify a Zoom webhook request. Zoom signs each event with
  * `x-zm-signature: v0=HMAC_SHA256(secret, "v0:" + timestamp + ":" + rawBody)`.
  */

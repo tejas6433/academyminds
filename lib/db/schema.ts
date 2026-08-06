@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   integer,
+  bigint,
   jsonb,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
@@ -105,17 +106,41 @@ export const children = pgTable('children', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+// A class recording. Lifecycle:
+//   pending  → row created by Zoom webhook; MP4 still on Zoom cloud
+//   ready    → MP4 copied to our own R2 bucket (r2Key set); served via signed URL
+//   failed   → transfer failed after retries; retry cron will keep trying until token expiry
+// Retention: `expiresAt` = recordedAt + 30 days. The retention cron deletes the
+// R2 object and this row once expired, so storage never grows without bound.
 export const recordings = pgTable('recordings', {
   id: serial('id').primaryKey(),
   classId: integer('class_id').notNull().references(() => classes.id),
   title: varchar('title', { length: 200 }).notNull(),
-  playUrl: text('play_url').notNull(), // Zoom share/play URL
+  // Legacy Zoom share/play URL. Nullable now — new recordings are served from R2
+  // behind an auth gate, so we no longer rely on a public Zoom link.
+  playUrl: text('play_url'),
   downloadUrl: text('download_url'),
   passcode: varchar('passcode', { length: 50 }),
   durationMinutes: integer('duration_minutes').notNull().default(0),
   zoomMeetingId: varchar('zoom_meeting_id', { length: 50 }),
   recordedAt: timestamp('recorded_at').notNull().defaultNow(),
   published: integer('published').notNull().default(1), // 1=visible to students, 0=hidden
+
+  // ── Transfer + storage state (Zoom cloud → our R2 bucket) ──
+  status: varchar('status', { length: 20 }).notNull().default('pending'), // pending | ready | failed
+  r2Key: text('r2_key'),                       // object key in the R2 bucket once uploaded
+  sizeBytes: bigint('size_bytes', { mode: 'number' }), // uploaded file size (bytes)
+  // Zoom-issued download credentials, kept only until the transfer succeeds.
+  zoomDownloadUrl: text('zoom_download_url'),
+  zoomDownloadToken: text('zoom_download_token'),
+  transferAttempts: integer('transfer_attempts').notNull().default(0),
+  // Set when a worker claims the row for transfer. Lets the retry cron detect a
+  // crashed/timed-out transfer (still 'transferring' long after this time) and
+  // reclaim it — without stealing a transfer that's legitimately still running.
+  transferStartedAt: timestamp('transfer_started_at'),
+  // When students lose access and the file is purged. NULL = never expires (legacy rows).
+  expiresAt: timestamp('expires_at'),
+
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 

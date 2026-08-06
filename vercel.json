@@ -1,0 +1,6 @@
+{
+  "crons": [
+    { "path": "/api/cron/recordings-transfer", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron/recordings-retention", "schedule": "0 3 * * *" }
+  ]
+}

@@ -21,6 +21,7 @@ export default async function TeacherDashboard() {
         id: r.id,
         title: r.title,
         playUrl: r.playUrl,
+        status: r.status,
         durationMinutes: r.durationMinutes,
         recordedAt: r.recordedAt.toISOString(),
         published: r.published,

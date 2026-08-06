@@ -8,7 +8,8 @@ const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 interface RecordingLite {
   id: number;
   title: string;
-  playUrl: string;
+  playUrl: string | null;
+  status: string;
   durationMinutes: number;
   recordedAt: string;
   published: number;
@@ -165,9 +166,21 @@ export function TeacherClassCard({ cls, students, recordings }: TeacherClassCard
             <ul className="space-y-2">
               {recs.map((r) => (
                 <li key={r.id} className="flex items-center justify-between gap-2 text-sm">
-                  <a href={r.playUrl} target="_blank" rel="noopener noreferrer" className="underline truncate" style={{ color: 'var(--am-purple)' }}>
-                    {r.title}
-                  </a>
+                  {r.status === 'ready' || r.playUrl ? (
+                    <a
+                      href={r.status === 'ready' ? `/api/recordings/${r.id}/play` : r.playUrl ?? undefined}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline truncate"
+                      style={{ color: 'var(--am-purple)' }}
+                    >
+                      {r.title}
+                    </a>
+                  ) : (
+                    <span className="truncate text-[var(--am-ink-400)]">
+                      {r.title} <span className="text-xs">· processing…</span>
+                    </span>
+                  )}
                   <button
                     onClick={() => togglePublish(r)}
                     disabled={pending}
