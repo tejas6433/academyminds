@@ -8,6 +8,7 @@
     "db:seed": "npx tsx lib/db/seed.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:migrate:prod": "MIGRATE_TARGET=prod drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {

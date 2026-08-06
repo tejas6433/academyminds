@@ -1,0 +1,1 @@
+ALTER TABLE "recordings" ADD COLUMN "transfer_started_at" timestamp;
