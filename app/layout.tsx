@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Fraunces } from 'next/font/google';
 import { getUser, getTeamForUser } from '@/lib/db/queries';
 import { SWRConfig } from 'swr';
+import { Analytics } from '@vercel/analytics/react';
 
 const SITE_DESCRIPTION =
   'Live small-group math and coding classes for Grade 5–7, taught by experienced educators on the Indian curriculum — typically 2–3 years ahead of Canadian grade level.';
@@ -15,6 +16,19 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   applicationName: 'AcademyMinds',
+  keywords: [
+    'online math classes',
+    'online coding classes for kids',
+    'Grade 5 math',
+    'Grade 6 math',
+    'Grade 7 math',
+    'Python for kids',
+    'live tutoring Canada',
+    'Indian curriculum math',
+    'CBSE math online',
+    'after school math and coding',
+  ],
+  alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     siteName: 'AcademyMinds',
@@ -23,11 +37,16 @@ export const metadata: Metadata = {
     url: '/',
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'AcademyMinds — live math & coding for Grade 5–7',
     description: SITE_DESCRIPTION,
   },
   robots: { index: true, follow: true },
+  // Set GOOGLE_SITE_VERIFICATION in env to the token Google Search Console gives
+  // you (HTML-tag method) — proves you own the domain so you can submit the sitemap.
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
 
 export const viewport: Viewport = {
@@ -85,6 +104,50 @@ export default function RootLayout({
             }),
           }}
         />
+        {/* FAQ structured data — can earn an expandable FAQ result on Google. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: [
+                {
+                  '@type': 'Question',
+                  name: 'What grades and subjects does AcademyMinds teach?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Live small-group math and coding classes for Grade 5–7, taught together as one program on the Indian curriculum — typically 2–3 years ahead of the Canadian grade level.',
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'How much does it cost?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'CAD $99.99/month, or $79.99/month billed quarterly ($239.97 every 3 months). Both include unlimited live math and coding classes plus recordings. A free trial class is available with no card required.',
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'Are classes live or recorded?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Classes are live with a real teacher. Every class is also recorded, and students can rewatch recordings for 30 days.',
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: 'Can we try a class before paying?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Yes — you can book a free trial class with no credit card required.',
+                  },
+                },
+              ],
+            }),
+          }}
+        />
         <SWRConfig
           value={{
             fallback: {
@@ -97,6 +160,7 @@ export default function RootLayout({
         >
           {children}
         </SWRConfig>
+        <Analytics />
       </body>
     </html>
   );
