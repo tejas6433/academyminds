@@ -59,6 +59,32 @@ export default function RootLayout({
       className={`${inter.variable} ${fraunces.variable}`}
     >
       <body className="min-h-[100dvh]">
+        {/* Structured data — helps search engines understand the business. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'EducationalOrganization',
+              name: 'AcademyMinds',
+              url: process.env.BASE_URL || 'https://academyminds.com',
+              description: SITE_DESCRIPTION,
+              email: 'support@academyminds.com',
+              areaServed: 'CA',
+              audience: {
+                '@type': 'EducationalAudience',
+                educationalRole: 'student',
+                audienceType: 'Grade 5–7 students',
+              },
+              offers: {
+                '@type': 'Offer',
+                category: 'Live math & coding classes',
+                priceCurrency: 'CAD',
+                price: '79.99',
+              },
+            }),
+          }}
+        />
         <SWRConfig
           value={{
             fallback: {
