@@ -11,7 +11,9 @@ export default function LandingPage() {
   return (
     <main>
       <Navbar />
-      <GradeExplorer />
+      <div id="main-content" tabIndex={-1}>
+        <GradeExplorer />
+      </div>
       <InteractiveDemo />
       <FoundingFamilies />
       <Pricing />

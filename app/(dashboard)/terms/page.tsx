@@ -10,7 +10,7 @@ export default function TermsPage() {
   return (
     <main style={{ background: 'var(--am-bg-light)' }}>
       <Navbar />
-      <article className="max-w-2xl mx-auto px-6 pt-28 pb-24">
+      <article id="main-content" tabIndex={-1} className="max-w-2xl mx-auto px-6 pt-28 pb-24">
         <p className="am-eyebrow mb-3" style={{ color: 'var(--am-purple)' }}>Legal</p>
         <h1 className="am-display text-4xl mb-2" style={{ color: 'var(--am-navy)' }}>Terms of Service</h1>
         <p className="text-[var(--am-ink-400)] text-sm mb-8">Last updated: {UPDATED}</p>

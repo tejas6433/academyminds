@@ -14,7 +14,18 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="am-glass-dark fixed top-0 left-0 right-0 z-50">
+    <header>
+      {/* WCAG 2.4.1 (Bypass Blocks, Level A): lets keyboard and screen-reader
+          users jump straight to the page content instead of tabbing the whole
+          nav on every page. Visually hidden until focused. */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-lg focus:px-4 focus:py-2 focus:font-semibold"
+        style={{ background: 'var(--am-purple)', color: '#fff' }}
+      >
+        Skip to content
+      </a>
+      <nav className="am-glass-dark fixed top-0 left-0 right-0 z-50" aria-label="Main">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Wordmark */}
         <Link href="/" className="text-white font-bold text-lg tracking-tight">
@@ -81,6 +92,7 @@ export function Navbar() {
           </div>
         </div>
       )}
-    </nav>
+      </nav>
+    </header>
   );
 }

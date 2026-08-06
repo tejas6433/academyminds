@@ -5,7 +5,7 @@ export default function PaymentSuccessPage() {
   return (
     <main>
       <Navbar />
-      <section className="py-24 px-4 sm:px-6" style={{ background: 'var(--am-bg-light)' }}>
+      <section id="main-content" tabIndex={-1} className="py-24 px-4 sm:px-6" style={{ background: 'var(--am-bg-light)' }}>
         <div className="am-card-raised max-w-xl mx-auto p-10 text-center">
           <div
             className="mx-auto mb-5 h-14 w-14 rounded-full flex items-center justify-center"

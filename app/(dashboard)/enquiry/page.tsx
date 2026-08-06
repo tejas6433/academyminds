@@ -68,7 +68,7 @@ export default function EnquiryPage() {
     <main style={{ background: 'var(--am-bg-light)' }}>
       <Navbar />
 
-      <section className="pt-28 pb-24 px-6">
+      <section id="main-content" tabIndex={-1} className="pt-28 pb-24 px-6">
         <div className="max-w-xl mx-auto">
           <div className="mb-10">
             <p className="am-eyebrow mb-3" style={{ color: 'var(--am-purple)' }}>

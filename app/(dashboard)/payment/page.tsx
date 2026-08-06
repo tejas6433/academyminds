@@ -56,7 +56,7 @@ export default function PaymentPage() {
   return (
     <main>
       <Navbar />
-      <section className="am-glow-top relative py-24 px-4 sm:px-6" style={{ background: 'var(--am-bg-light)' }}>
+      <section id="main-content" tabIndex={-1} className="am-glow-top relative py-24 px-4 sm:px-6" style={{ background: 'var(--am-bg-light)' }}>
         <div className="relative max-w-2xl mx-auto">
           <div className="text-center mb-10">
             <p className="am-eyebrow mb-3" style={{ color: 'var(--am-purple)' }}>Secure Checkout</p>
