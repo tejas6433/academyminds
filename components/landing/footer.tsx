@@ -34,10 +34,10 @@ export function Footer() {
               — two to three years ahead of grade level.
             </p>
             <a
-              href="mailto:hello@academyminds.com"
+              href="mailto:support@academyminds.com"
               className="inline-block mt-4 text-gray-300 hover:text-white text-sm transition-colors"
             >
-              hello@academyminds.com
+              support@academyminds.com
             </a>
           </div>
 
