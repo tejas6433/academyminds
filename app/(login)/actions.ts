@@ -22,7 +22,7 @@ import {
 } from '@/lib/db/schema';
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { createCheckoutSession } from '@/lib/payments/stripe';
 import { getUser, getUserWithTeam } from '@/lib/db/queries';
 import {
@@ -31,6 +31,7 @@ import {
 } from '@/lib/auth/middleware';
 import { homePathForRole } from '@/lib/auth/guards';
 import { sendWelcomeEmail, sendPasswordResetEmail } from '@/lib/email/resend';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 async function logActivity(
   teamId: number | null | undefined,
@@ -57,6 +58,19 @@ const signInSchema = z.object({
 
 export const signIn = validatedAction(signInSchema, async (data, formData) => {
   const { email, password } = data;
+
+  // Brute-force guard. Keyed on the target email so an attacker can't grind one
+  // account, and on IP so they can't spray many accounts from one host.
+  const ip = clientIp(await headers());
+  const perEmail = rateLimit(`signin:email:${email.toLowerCase()}`, 8, 900);
+  const perIp = rateLimit(`signin:ip:${ip}`, 25, 900);
+  if (!perEmail.ok || !perIp.ok) {
+    return {
+      error: 'Too many sign-in attempts. Please wait a few minutes and try again.',
+      email,
+      password
+    };
+  }
 
   const userWithTeam = await db
     .select({
@@ -121,6 +135,16 @@ const signUpSchema = z.object({
 
 export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   const { email, password, inviteId, name, accountType, childName, childGrade, subjectInterest } = data;
+
+  // Cap account creation per host — each signup also sends a welcome email.
+  const signupLimit = rateLimit(`signup:${clientIp(await headers())}`, 5, 3600);
+  if (!signupLimit.ok) {
+    return {
+      error: 'Too many accounts created from this device. Please try again later.',
+      email,
+      password
+    };
+  }
 
   const existingUser = await db
     .select()
@@ -278,6 +302,16 @@ const forgotPasswordSchema = z.object({
  */
 export const requestPasswordReset = validatedAction(forgotPasswordSchema, async (data) => {
   const { email } = data;
+
+  // Without a cap this endpoint is an email bomb: repeated requests mail the
+  // target repeatedly and burn the sending quota. Silently succeed when limited
+  // so the response still can't be used to probe which emails exist.
+  const resetLimit = rateLimit(`reset:${email.toLowerCase()}`, 3, 900);
+  const resetIpLimit = rateLimit(`reset:ip:${clientIp(await headers())}`, 10, 900);
+  if (!resetLimit.ok || !resetIpLimit.ok) {
+    return { success: 'If an account exists for that email, a reset link is on its way.' };
+  }
+
   const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
   if (user) {

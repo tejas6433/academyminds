@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { db } from '@/lib/db/drizzle';
 import { enquiries } from '@/lib/db/schema';
 import { sendEmail } from '@/lib/email/resend';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 // Where new-enquiry notifications are sent. Set ENQUIRY_NOTIFY_EMAIL to an inbox
 // you actually check; falls back to the support address.
@@ -24,6 +25,16 @@ function escapeHtml(s: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  // Public, unauthenticated endpoint that costs money on every hit (email send)
+  // and lands in a human inbox — cap it well below any genuine parent's usage.
+  const limit = rateLimit(`enquiry:${clientIp(request.headers)}`, 5, 600);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: 'Too many enquiries. Please try again shortly.' },
+      { status: 429, headers: { 'Retry-After': String(limit.retryAfter) } }
+    );
+  }
+
   let body: unknown;
   try {
     body = await request.json();
