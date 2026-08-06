@@ -178,16 +178,6 @@ export async function getSubscriptionByEmail(email: string) {
   return rows[0] ?? null;
 }
 
-/** Students enrolled in a given class. */
-export async function getStudentsForClass(classId: number) {
-  const rows = await db
-    .select({ id: users.id, name: users.name, email: users.email })
-    .from(classEnrollments)
-    .innerJoin(users, eq(classEnrollments.userId, users.id))
-    .where(eq(classEnrollments.classId, classId));
-  return rows;
-}
-
 /** Published recordings for the classes a student is enrolled in. */
 export async function getRecordingsForStudent(userId: number) {
   const enrolled = await getClassesForStudent(userId);
@@ -224,14 +214,9 @@ export async function getRecordingById(recordingId: number) {
   return rows[0] ?? null;
 }
 
-/** All recordings for a class (teacher/admin view, includes unpublished). */
-export async function getRecordingsForClass(classId: number) {
-  return db.select().from(recordings).where(eq(recordings.classId, classId)).orderBy(desc(recordings.recordedAt));
-}
-
 /**
  * Students for MANY classes in one query, grouped by class id.
- * Avoids the N+1 of calling getStudentsForClass once per class.
+ * Avoids running one query per class.
  */
 export async function getStudentsForClasses(classIds: number[]) {
   const grouped = new Map<number, { id: number; name: string | null; email: string }[]>();
@@ -259,7 +244,7 @@ export async function getStudentsForClasses(classIds: number[]) {
 
 /**
  * Recordings for MANY classes in one query, grouped by class id.
- * Avoids the N+1 of calling getRecordingsForClass once per class.
+ * Avoids running one query per class.
  */
 export async function getRecordingsForClasses(classIds: number[]) {
   type Recording = typeof recordings.$inferSelect;
