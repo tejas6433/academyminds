@@ -32,10 +32,36 @@ export default function EnquiryPage() {
   const [submitted, setSubmitted] = useState(false);
   const [grade, setGrade] = useState<number | null>(null);
   const [subject, setSubject] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitted(true);
+    setError('');
+    setSubmitting(true);
+    const form = new FormData(e.currentTarget);
+    try {
+      const res = await fetch('/api/enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          parentName: form.get('parentName'),
+          email: form.get('email'),
+          grade: grade ?? undefined,
+          interest: subject ? subject.toLowerCase() : undefined,
+          message: form.get('message') || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Something went wrong. Please try again.');
+      }
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -78,11 +104,11 @@ export default function EnquiryPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--am-navy)' }}>Parent name</label>
-                  <input required type="text" placeholder="Your full name" className={inputCls} style={inputStyle} />
+                  <input required name="parentName" type="text" placeholder="Your full name" className={inputCls} style={inputStyle} />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--am-navy)' }}>Email address</label>
-                  <input required type="email" placeholder="you@example.com" className={inputCls} style={inputStyle} />
+                  <input required name="email" type="email" placeholder="you@example.com" className={inputCls} style={inputStyle} />
                 </div>
               </div>
 
@@ -96,7 +122,9 @@ export default function EnquiryPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold mb-2.5" style={{ color: 'var(--am-navy)' }}>Interested in</label>
+                <label className="block text-sm font-semibold mb-2.5" style={{ color: 'var(--am-navy)' }}>
+                  Most excited about <span className="font-normal text-[var(--am-ink-400)]">(classes cover both)</span>
+                </label>
                 <div className="flex gap-3">
                   {SUBJECTS.map((s) => (
                     <Choice key={s} active={subject === s} onClick={() => setSubject(s)}>{s}</Choice>
@@ -109,6 +137,7 @@ export default function EnquiryPage() {
                   Message <span className="font-normal text-[var(--am-ink-400)]">(optional)</span>
                 </label>
                 <textarea
+                  name="message"
                   rows={4}
                   placeholder="Anything that helps — interests, schedule preferences, questions."
                   className={`${inputCls} resize-none`}
@@ -116,11 +145,12 @@ export default function EnquiryPage() {
                 />
               </div>
 
-              <input type="hidden" name="grade" value={grade ?? ''} />
-              <input type="hidden" name="subject" value={subject ?? ''} />
+              {error && (
+                <p className="text-sm font-medium" style={{ color: '#dc2626' }} role="alert">{error}</p>
+              )}
 
-              <button type="submit" className="am-btn am-btn-primary w-full text-base">
-                Send enquiry
+              <button type="submit" disabled={submitting} className="am-btn am-btn-primary w-full text-base disabled:opacity-60">
+                {submitting ? 'Sending…' : 'Send enquiry'}
               </button>
 
               <p className="text-center text-[var(--am-ink-400)] text-xs">

@@ -11,6 +11,7 @@ import {
   children,
   subscriptions,
   auditLogs,
+  enquiries,
 } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
@@ -206,6 +207,11 @@ export async function getRecordingsForStudent(userId: number) {
       )
     )
     .orderBy(desc(recordings.recordedAt));
+}
+
+/** All enquiries, newest first (admin view). */
+export async function getEnquiries(limit = 200) {
+  return db.select().from(enquiries).orderBy(desc(enquiries.createdAt)).limit(limit);
 }
 
 export async function getRecordingById(recordingId: number) {

@@ -171,6 +171,18 @@ export const subscriptions = pgTable('subscriptions', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
+// Trial-class / general enquiries submitted from the public /enquiry form.
+export const enquiries = pgTable('enquiries', {
+  id: serial('id').primaryKey(),
+  parentName: varchar('parent_name', { length: 120 }).notNull(),
+  email: varchar('email', { length: 255 }).notNull(),
+  gradeLevel: integer('grade_level'), // 5, 6, 7 (nullable — parent may skip)
+  interest: varchar('interest', { length: 20 }), // 'math' | 'coding' | 'both'
+  message: text('message'),
+  handled: integer('handled').notNull().default(0), // 1 once an admin has followed up
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
 export const teamsRelations = relations(teams, ({ many }) => ({
   teamMembers: many(teamMembers),
   activityLogs: many(activityLogs),
