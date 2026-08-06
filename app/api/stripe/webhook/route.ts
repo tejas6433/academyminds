@@ -4,9 +4,13 @@ import {
   stripe,
   syncSubscriptionFromStripe,
 } from '@/lib/payments/stripe';
+import { sendEmail } from '@/lib/email/resend';
 import { NextRequest, NextResponse } from 'next/server';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+
+// Where new-payment alerts go. Reuses the enquiry notify inbox.
+const NOTIFY_TO = process.env.ENQUIRY_NOTIFY_EMAIL || 'support@academyminds.com';
 
 export async function POST(request: NextRequest) {
   // Stripe signs the RAW body — read text(), never json(), or the signature
@@ -37,6 +41,21 @@ export async function POST(request: NextRequest) {
             ? session.subscription
             : session.subscription?.id;
         if (subId) await syncSubscriptionFromStripe(subId);
+
+        // Alert admin: a new customer just paid. Best-effort — never fail the
+        // webhook over an email. Prompts you to create the student account.
+        const amount = session.amount_total != null ? `$${(session.amount_total / 100).toFixed(2)} ${(session.currency ?? '').toUpperCase()}` : '';
+        await sendEmail({
+          to: NOTIFY_TO,
+          subject: `New paid subscription — ${session.customer_details?.email ?? session.customer_email ?? 'customer'}`,
+          html: `
+            <h2>New AcademyMinds subscription 🎉</h2>
+            <p><strong>Email:</strong> ${session.customer_details?.email ?? session.customer_email ?? '—'}</p>
+            <p><strong>Name:</strong> ${session.customer_details?.name ?? '—'}</p>
+            <p><strong>Amount:</strong> ${amount || '—'}</p>
+            <p>Next step: create the student account from the admin Customers page.</p>
+          `,
+        });
         break;
       }
 

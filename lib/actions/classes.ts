@@ -7,6 +7,9 @@ import { classes, classEnrollments, recordings, users } from '@/lib/db/schema';
 import { getUser, getClassById } from '@/lib/db/queries';
 import { createZoomMeeting } from '@/lib/zoom';
 import { logAudit } from '@/lib/audit';
+import { hashPassword } from '@/lib/auth/session';
+import { sendStudentCredentialsEmail } from '@/lib/email/resend';
+import { randomBytes } from 'crypto';
 
 const DAY_TO_ZOOM: Record<number, number> = { 0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7 };
 
@@ -119,6 +122,73 @@ export async function setUserRole(userId: number, role: string) {
   });
   revalidatePath('/dashboard/admin');
   return { ok: true };
+}
+
+/**
+ * Admin: create a student login for a parent's child, optionally enroll them in
+ * a class, and email the credentials to the parent. This is the PIPEDA-safe path
+ * — the parent has already consented at signup/payment, and every kid account is
+ * created by an admin, never self-served.
+ */
+export async function createStudentAccount(input: {
+  studentName: string;
+  studentEmail: string;
+  parentEmail: string;
+  classId?: number;
+}) {
+  const actor = await assertRole(['admin']);
+  const studentName = input.studentName.trim();
+  const studentEmail = input.studentEmail.trim().toLowerCase();
+  const parentEmail = input.parentEmail.trim().toLowerCase();
+
+  if (!studentName || !studentEmail || !parentEmail) {
+    return { ok: false as const, error: 'Student name, student email, and parent email are all required.' };
+  }
+
+  // Reject if the email is already taken.
+  const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, studentEmail)).limit(1);
+  if (existing[0]) {
+    return { ok: false as const, error: 'A user with that student email already exists.' };
+  }
+
+  // Generate a temporary password the parent can change later.
+  const tempPassword = randomBytes(9).toString('base64url'); // ~12 chars, URL-safe
+  const passwordHash = await hashPassword(tempPassword);
+
+  const [student] = await db
+    .insert(users)
+    .values({
+      name: studentName,
+      email: studentEmail,
+      passwordHash,
+      role: 'student',
+      // Parent already consented at signup/payment; recording it on the child
+      // account keeps the PIPEDA trail complete.
+      parentalConsentAt: new Date(),
+    })
+    .returning({ id: users.id });
+
+  if (input.classId) {
+    await db.insert(classEnrollments).values({ classId: input.classId, userId: student.id });
+  }
+
+  await logAudit({
+    actorId: actor.id,
+    action: 'student.create',
+    targetType: 'user',
+    targetId: student.id,
+    metadata: { parentEmail, classId: input.classId ?? null },
+  });
+
+  // Email the login to the parent (never fails the action if email is down).
+  await sendStudentCredentialsEmail(parentEmail, {
+    studentName,
+    studentEmail,
+    tempPassword,
+  });
+
+  revalidatePath('/dashboard/admin/customers');
+  return { ok: true as const, studentId: student.id };
 }
 
 /** Admin: enroll a student into a class. */

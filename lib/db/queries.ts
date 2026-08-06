@@ -214,6 +214,11 @@ export async function getEnquiries(limit = 200) {
   return db.select().from(enquiries).orderBy(desc(enquiries.createdAt)).limit(limit);
 }
 
+/** All subscriptions (paying customers), newest first (admin view). */
+export async function getSubscriptions(limit = 200) {
+  return db.select().from(subscriptions).orderBy(desc(subscriptions.createdAt)).limit(limit);
+}
+
 export async function getRecordingById(recordingId: number) {
   const rows = await db.select().from(recordings).where(eq(recordings.id, recordingId)).limit(1);
   return rows[0] ?? null;

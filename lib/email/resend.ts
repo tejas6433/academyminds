@@ -89,3 +89,22 @@ export function sendPasswordResetEmail(to: string, resetUrl: string) {
     ),
   });
 }
+
+/** Sent to the parent when an admin creates their child's student login. */
+export function sendStudentCredentialsEmail(
+  parentEmail: string,
+  student: { studentName: string; studentEmail: string; tempPassword: string }
+) {
+  return sendEmail({
+    to: parentEmail,
+    subject: `${student.studentName}'s AcademyMinds login is ready`,
+    html: shell(
+      `${student.studentName}'s account is ready 🎓`,
+      `We've set up your child's student login. They can sign in to join live classes and watch recordings.<br/><br/>
+       <strong>Email:</strong> ${student.studentEmail}<br/>
+       <strong>Temporary password:</strong> ${student.tempPassword}<br/><br/>
+       Please change the password after the first sign-in for security.`,
+      { label: 'Sign in', url: `${process.env.BASE_URL}/sign-in` }
+    ),
+  });
+}

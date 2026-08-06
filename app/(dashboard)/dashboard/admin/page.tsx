@@ -66,7 +66,14 @@ export default async function AdminDashboard() {
           </h1>
           <p className="text-[var(--am-ink-500)] text-sm mt-1.5">Manage classes, teachers, students, and roles.</p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 flex-wrap justify-end">
+          <Link
+            href="/dashboard/admin/customers"
+            className="am-btn px-4 text-sm"
+            style={{ border: '1px solid var(--am-hairline-strong)', color: 'var(--am-ink-700)' }}
+          >
+            Customers
+          </Link>
           <Link
             href="/dashboard/admin/enquiries"
             className="am-btn px-4 text-sm"
