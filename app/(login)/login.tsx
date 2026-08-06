@@ -154,7 +154,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                         </select>
                       </div>
                       <div>
-                        <Label htmlFor="subjectInterest" className="text-sm font-medium text-gray-700">Interest</Label>
+                        <Label htmlFor="subjectInterest" className="text-sm font-medium text-gray-700">Most excited about</Label>
                         <select
                           id="subjectInterest"
                           name="subjectInterest"
@@ -162,9 +162,9 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                           className="am-input mt-1 w-full px-3 py-2 rounded-lg border text-sm outline-none transition-shadow"
                           style={{ borderColor: 'var(--am-hairline-strong)' }}
                         >
+                          <option value="both">Equally both</option>
                           <option value="math">Math</option>
                           <option value="coding">Coding</option>
-                          <option value="both">Both</option>
                         </select>
                       </div>
                     </div>
