@@ -29,7 +29,10 @@ export function CreateStudentForm({ parentEmail, classes }: { parentEmail: strin
           classId: classId ? Number(classId) : undefined,
         });
         if (res.ok) {
-          setResult({ ok: true, msg: `Account created — login emailed to ${parentEmail}.` });
+          setResult({
+            ok: true,
+            msg: `Account created for ${studentEmail}. Temp password: ${res.tempPassword} — also emailed to ${parentEmail}. Share it if the email doesn't arrive.`,
+          });
           setStudentName('');
           setStudentEmail('');
           setClassId('');

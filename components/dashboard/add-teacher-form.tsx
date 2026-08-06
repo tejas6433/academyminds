@@ -17,7 +17,10 @@ export function AddTeacherForm() {
       try {
         const res = await createTeacherAccount({ name, email });
         if (res.ok) {
-          setResult({ ok: true, msg: `Teacher created — login emailed to ${email}.` });
+          setResult({
+            ok: true,
+            msg: `Teacher created for ${email}. Temp password: ${res.tempPassword} — also emailed. Share it if the email doesn't arrive.`,
+          });
           setName('');
           setEmail('');
         } else {

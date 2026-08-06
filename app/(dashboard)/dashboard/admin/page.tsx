@@ -12,6 +12,7 @@ import { requireRole } from '@/lib/auth/guards';
 import { AdminClassForm } from '@/components/dashboard/admin-class-form';
 import { AdminUserRow } from '@/components/dashboard/admin-user-row';
 import { AddTeacherForm } from '@/components/dashboard/add-teacher-form';
+import { DeleteClassButton } from '@/components/dashboard/delete-class-button';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -127,6 +128,7 @@ export default async function AdminDashboard() {
                 <th className="py-3.5 px-5 font-bold">Teacher</th>
                 <th className="py-3.5 px-5 font-bold">Schedule</th>
                 <th className="py-3.5 px-5 font-bold">Zoom</th>
+                <th className="py-3.5 px-5 font-bold"></th>
               </tr>
             </thead>
             <tbody>
@@ -144,6 +146,9 @@ export default async function AdminDashboard() {
                     ) : (
                       <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(107,114,128,0.1)', color: '#6b7280' }}>—</span>
                     )}
+                  </td>
+                  <td className="py-3.5 px-5 text-right">
+                    <DeleteClassButton classId={c.id} className={c.name} />
                   </td>
                 </tr>
               ))}

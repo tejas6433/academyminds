@@ -9,6 +9,7 @@ import { createZoomMeeting } from '@/lib/zoom';
 import { logAudit } from '@/lib/audit';
 import { hashPassword } from '@/lib/auth/session';
 import { sendStudentCredentialsEmail, sendTeacherCredentialsEmail } from '@/lib/email/resend';
+import { deleteFromR2 } from '@/lib/r2';
 import { randomBytes } from 'crypto';
 
 const DAY_TO_ZOOM: Record<number, number> = { 0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7 };
@@ -188,7 +189,9 @@ export async function createStudentAccount(input: {
   });
 
   revalidatePath('/dashboard/admin/customers');
-  return { ok: true as const, studentId: student.id };
+  // Return the temp password so the admin can share it manually if the email
+  // doesn't deliver (e.g. before the sending domain is verified).
+  return { ok: true as const, studentId: student.id, tempPassword };
 }
 
 /**
@@ -227,7 +230,7 @@ export async function createTeacherAccount(input: { name: string; email: string 
   await sendTeacherCredentialsEmail(email, { name, email, tempPassword });
 
   revalidatePath('/dashboard/admin');
-  return { ok: true as const, teacherId: teacher.id };
+  return { ok: true as const, teacherId: teacher.id, tempPassword };
 }
 
 /** Admin: enroll a student into a class. */
@@ -243,6 +246,42 @@ export async function enrollStudent(classId: number, studentId: number) {
   });
   revalidatePath('/dashboard/admin');
   return { ok: true };
+}
+
+/**
+ * Admin: permanently delete a class. Cleans up everything that references it
+ * first — enrollments, and recordings (including their stored R2 files) — so
+ * nothing is orphaned. Destructive and irreversible.
+ */
+export async function deleteClass(classId: number) {
+  const actor = await assertRole(['admin']);
+  const cls = await getClassById(classId);
+  if (!cls) return { ok: false as const, error: 'Class not found.' };
+
+  // Delete the class's recordings' stored files (best-effort), then their rows.
+  const recs = await db.select().from(recordings).where(eq(recordings.classId, classId));
+  for (const r of recs) {
+    if (r.r2Key) {
+      try {
+        await deleteFromR2(r.r2Key);
+      } catch (err) {
+        console.error(`[deleteClass] R2 delete failed for recording ${r.id}:`, err);
+      }
+    }
+  }
+  await db.delete(recordings).where(eq(recordings.classId, classId));
+  await db.delete(classEnrollments).where(eq(classEnrollments.classId, classId));
+  await db.delete(classes).where(eq(classes.id, classId));
+
+  await logAudit({
+    actorId: actor.id,
+    action: 'class.delete',
+    targetType: 'class',
+    targetId: classId,
+    metadata: { name: cls.name },
+  });
+  revalidatePath('/dashboard/admin');
+  return { ok: true as const };
 }
 
 /** Teacher or admin: toggle a recording's visibility to students. */
