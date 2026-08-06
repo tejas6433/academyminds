@@ -112,12 +112,6 @@ export async function getActivityLogs() {
 
 // ── AcademyMinds: classes, enrollments, recordings ──────────────────────────
 
-export async function requireUser() {
-  const user = await getUser();
-  if (!user) throw new Error('Not authenticated');
-  return user;
-}
-
 /** All classes a teacher is assigned to teach. */
 export async function getClassesForTeacher(teacherId: number) {
   return db.select().from(classes).where(eq(classes.teacherId, teacherId)).orderBy(classes.dayOfWeek);

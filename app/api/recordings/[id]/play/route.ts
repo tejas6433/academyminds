@@ -58,7 +58,12 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: 'Storage not configured' }, { status: 503 });
   }
 
-  const url = await signedGetUrl(rec.r2Key);
-  // 302 so the <video src> / link follows straight to the signed stream.
-  return NextResponse.redirect(url, 302);
+  try {
+    const url = await signedGetUrl(rec.r2Key);
+    // 302 so the <video src> / link follows straight to the signed stream.
+    return NextResponse.redirect(url, 302);
+  } catch (err) {
+    console.error(`[recordings] failed to sign URL for recording ${rec.id}:`, err);
+    return NextResponse.json({ error: 'Could not load recording' }, { status: 502 });
+  }
 }

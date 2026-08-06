@@ -1,26 +1,17 @@
-'use client';
-
-import { useState } from 'react';
 import { Navbar } from '@/components/landing/navbar';
-import { Hero } from '@/components/landing/hero';
-import { CurriculumComparison } from '@/components/landing/curriculum-comparison';
-import { Courses } from '@/components/landing/courses';
+import { GradeExplorer } from '@/components/landing/grade-explorer';
 import { FoundingFamilies } from '@/components/landing/founding-families';
 import { InteractiveDemo } from '@/components/landing/interactive-demo';
 import { Pricing } from '@/components/landing/pricing';
 import { Footer } from '@/components/landing/footer';
 
-type Grade = 5 | 6 | 7;
-
+// Server component: only the grade-interactive trio (inside GradeExplorer) runs
+// on the client. Everything below is server-rendered with no client JS.
 export default function LandingPage() {
-  const [grade, setGrade] = useState<Grade>(6);
-
   return (
     <main>
       <Navbar />
-      <Hero selectedGrade={grade} onGradeChange={setGrade} />
-      <CurriculumComparison selectedGrade={grade} onGradeChange={setGrade} />
-      <Courses selectedGrade={grade} />
+      <GradeExplorer />
       <InteractiveDemo />
       <FoundingFamilies />
       <Pricing />
