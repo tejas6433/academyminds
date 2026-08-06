@@ -42,6 +42,9 @@ postgres_data/
 
 # agent / tooling scratch (not part of the app)
 .claude/
+.claude-flow/
 .superpowers/
+.ruflo/
 design beta/
 scratchpad/
+graphify-out/
