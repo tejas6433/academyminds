@@ -11,7 +11,7 @@ const SITE_DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.BASE_URL || 'http://localhost:3000'),
   title: {
-    default: 'AcademyMinds — live math & coding for Grade 5–7',
+    default: 'AcademyMinds - Live Math & Coding for Grade 5-7',
     template: '%s · AcademyMinds',
   },
   description: SITE_DESCRIPTION,
@@ -32,13 +32,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'AcademyMinds',
-    title: 'AcademyMinds — live math & coding for Grade 5–7',
+    title: 'AcademyMinds - Live Math & Coding for Grade 5-7',
     description: SITE_DESCRIPTION,
     url: '/',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AcademyMinds — live math & coding for Grade 5–7',
+    title: 'AcademyMinds - Live Math & Coding for Grade 5-7',
     description: SITE_DESCRIPTION,
   },
   robots: { index: true, follow: true },
@@ -78,17 +78,17 @@ export default function RootLayout({
       className={`${inter.variable} ${fraunces.variable}`}
     >
       <body className="min-h-[100dvh]">
-        {/* WebSite entity — this is the signal Google uses to show "AcademyMinds"
-            as the site name in search results instead of falling back to the bare
-            domain. It must carry the site's root URL to be eligible. */}
+        {/* WebSite entity — the signal Google reads to show "Academy Minds" as
+            the site name above a result instead of falling back to the bare
+            domain. Must carry the site's root URL to be eligible. */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              name: 'AcademyMinds',
-              alternateName: 'AcademyMinds — Live Math & Coding',
+              name: 'Academy Minds',
+              alternateName: ['AcademyMinds', 'Academy Minds Canada'],
               url: process.env.BASE_URL || 'https://academyminds.com',
             }),
           }}
