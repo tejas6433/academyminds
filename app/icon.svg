@@ -1,9 +1,13 @@
 <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <title>AcademyMinds</title>
   <rect width="100" height="100" fill="#1a1a2e"/>
-  <text x="50" y="54" font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
-        font-size="56" font-weight="700" text-anchor="middle" dominant-baseline="central"
-        letter-spacing="-3">
-    <tspan fill="#ffffff">A</tspan><tspan fill="#9b6bc4">M</tspan>
-  </text>
+  <!-- Letterforms are drawn as paths, not text: a favicon is rendered outside
+       normal page layout where webfonts are unavailable, so text-based marks
+       can silently fail to draw. Paths always render. -->
+  <path fill="#ffffff" fill-rule="evenodd"
+        d="M8 74 L23 26 L34 26 L49 74 L38 74 L35 63 L22 63 L19 74 Z
+           M24.5 54 L32.5 54 L28.5 40 Z"/>
+  <path fill="#9b6bc4"
+        d="M52 74 L52 26 L63 26 L73 49 L83 26 L94 26 L94 74 L84 74 L84 45
+           L76.5 62 L69.5 62 L62 45 L62 74 Z"/>
 </svg>
