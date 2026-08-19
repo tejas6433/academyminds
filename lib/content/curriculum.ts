@@ -48,19 +48,19 @@ export interface CourseInfo {
 
 export const COURSES: Record<Grade, { math: CourseInfo; coding: CourseInfo }> = {
   5: {
-    math: { subject: 'Math — Grade 5', icon: '🔢', frequency: '3× per week',
+    math: { subject: 'Math — Grade 5', icon: '🔢', frequency: '2× per week',
       topics: ['Advanced Fractions & Decimals', 'Introduction to Algebra', 'Geometry & Measurement', 'Problem Solving Strategies', 'Number Theory Basics'] },
     coding: { subject: 'Coding — Grade 5', icon: '💻', frequency: '2× per week',
       topics: ['Python Basics & Syntax', 'Variables & Data Types', 'Conditional Logic (if/else)', 'Loops & Iteration', 'Mini-Projects'] },
   },
   6: {
-    math: { subject: 'Math — Grade 6', icon: '🔢', frequency: '3× per week',
+    math: { subject: 'Math — Grade 6', icon: '🔢', frequency: '2× per week',
       topics: ['Full Algebra Chapter', 'Ratios & Proportions', 'Data & Statistics', 'Integers & Number Theory', 'Geometric Constructions'] },
     coding: { subject: 'Coding — Grade 6', icon: '💻', frequency: '2× per week',
       topics: ['Python Functions', 'Lists & Dictionaries', 'File I/O Basics', 'Debugging Techniques', 'Build a Calculator App'] },
   },
   7: {
-    math: { subject: 'Math — Grade 7', icon: '🔢', frequency: '3× per week',
+    math: { subject: 'Math — Grade 7', icon: '🔢', frequency: '2× per week',
       topics: ['Linear Equations & Inequalities', 'Geometry Proofs', 'Exponents & Powers', 'Financial Math & Percentages', 'Intro to Probability'] },
     coding: { subject: 'Coding — Grade 7', icon: '💻', frequency: '2× per week',
       topics: ['OOP Concepts in Python', 'Classes & Objects', 'APIs & JSON', 'Mini Web Projects', 'Final Project: Build a Game'] },
