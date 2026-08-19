@@ -78,6 +78,21 @@ export default function RootLayout({
       className={`${inter.variable} ${fraunces.variable}`}
     >
       <body className="min-h-[100dvh]">
+        {/* WebSite entity — this is the signal Google uses to show "AcademyMinds"
+            as the site name in search results instead of falling back to the bare
+            domain. It must carry the site's root URL to be eligible. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'AcademyMinds',
+              alternateName: 'AcademyMinds — Live Math & Coding',
+              url: process.env.BASE_URL || 'https://academyminds.com',
+            }),
+          }}
+        />
         {/* Structured data — helps search engines understand the business. */}
         <script
           type="application/ld+json"
