@@ -8,6 +8,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // carry no search value and competed with the homepage for the same query.
   const routes: { path: string; priority: number; freq: MetadataRoute.Sitemap[number]['changeFrequency'] }[] = [
     { path: '', priority: 1, freq: 'weekly' },
+    { path: '/grade-5-math', priority: 0.9, freq: 'monthly' },
+    { path: '/grade-6-math', priority: 0.9, freq: 'monthly' },
+    { path: '/grade-7-math', priority: 0.9, freq: 'monthly' },
+    { path: '/coding-for-kids', priority: 0.9, freq: 'monthly' },
     { path: '/enquiry', priority: 0.8, freq: 'monthly' },
     { path: '/payment', priority: 0.7, freq: 'monthly' },
     { path: '/privacy', priority: 0.3, freq: 'yearly' },

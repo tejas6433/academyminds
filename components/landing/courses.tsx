@@ -1,68 +1,15 @@
-type Grade = 5 | 6 | 7;
-
-const COURSES: Record<Grade, { subject: string; icon: string; color: string; topics: string[]; frequency: string; teacher: string }[]> = {
-  5: [
-    {
-      subject: 'Math — Grade 5',
-      icon: '🔢',
-      color: 'var(--am-purple)',
-      topics: ['Advanced Fractions & Decimals', 'Introduction to Algebra', 'Geometry & Measurement', 'Problem Solving Strategies', 'Number Theory Basics'],
-      frequency: '3× per week',
-      teacher: 'Mr. Rajan Sharma',
-    },
-    {
-      subject: 'Coding — Grade 5',
-      icon: '💻',
-      color: 'var(--am-navy)',
-      topics: ['Python Basics & Syntax', 'Variables & Data Types', 'Conditional Logic (if/else)', 'Loops & Iteration', 'Mini-Projects'],
-      frequency: '2× per week',
-      teacher: 'Ms. Priya Nair',
-    },
-  ],
-  6: [
-    {
-      subject: 'Math — Grade 6',
-      icon: '🔢',
-      color: 'var(--am-purple)',
-      topics: ['Full Algebra Chapter', 'Ratios & Proportions', 'Data & Statistics', 'Integers & Number Theory', 'Geometric Constructions'],
-      frequency: '3× per week',
-      teacher: 'Mr. Rajan Sharma',
-    },
-    {
-      subject: 'Coding — Grade 6',
-      icon: '💻',
-      color: 'var(--am-navy)',
-      topics: ['Python Functions', 'Lists & Dictionaries', 'File I/O Basics', 'Debugging Techniques', 'Build a Calculator App'],
-      frequency: '2× per week',
-      teacher: 'Ms. Priya Nair',
-    },
-  ],
-  7: [
-    {
-      subject: 'Math — Grade 7',
-      icon: '🔢',
-      color: 'var(--am-purple)',
-      topics: ['Linear Equations & Inequalities', 'Geometry Proofs', 'Exponents & Powers', 'Financial Math & Percentages', 'Intro to Probability'],
-      frequency: '3× per week',
-      teacher: 'Mr. Rajan Sharma',
-    },
-    {
-      subject: 'Coding — Grade 7',
-      icon: '💻',
-      color: 'var(--am-navy)',
-      topics: ['OOP Concepts in Python', 'Classes & Objects', 'APIs & JSON', 'Mini Web Projects', 'Final Project: Build a Game'],
-      frequency: '2× per week',
-      teacher: 'Ms. Priya Nair',
-    },
-  ],
-};
+import { COURSES, type Grade } from '@/lib/content/curriculum';
 
 interface CoursesProps {
   selectedGrade: Grade;
 }
 
 export function Courses({ selectedGrade }: CoursesProps) {
-  const courses = COURSES[selectedGrade];
+  const entry = COURSES[selectedGrade];
+  const courses = [
+    { ...entry.math, color: 'var(--am-purple)' },
+    { ...entry.coding, color: 'var(--am-navy)' },
+  ];
 
   return (
     <section id="courses" className="am-glow-top relative py-28 px-4 sm:px-6 bg-white">
@@ -95,10 +42,8 @@ export function Courses({ selectedGrade }: CoursesProps) {
                   {c.icon}
                 </div>
                 <h3 className="relative text-xl font-bold text-white tracking-tight">{c.subject}</h3>
-                <div className="relative text-white/70 text-sm mt-1.5 flex items-center gap-2">
+                <div className="relative text-white/70 text-sm mt-1.5">
                   <span className="text-white font-medium">{c.frequency}</span>
-                  <span className="h-1 w-1 rounded-full bg-white/30" />
-                  {c.teacher}
                 </div>
               </div>
 

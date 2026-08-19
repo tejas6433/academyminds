@@ -11,6 +11,15 @@ const COLUMNS = [
     ],
   },
   {
+    heading: 'By grade',
+    links: [
+      { label: 'Grade 5 Math', href: '/grade-5-math' },
+      { label: 'Grade 6 Math', href: '/grade-6-math' },
+      { label: 'Grade 7 Math', href: '/grade-7-math' },
+      { label: 'Coding for Kids', href: '/coding-for-kids' },
+    ],
+  },
+  {
     heading: 'Get started',
     links: [
       { label: 'Book a free trial', href: '/enquiry' },
@@ -24,7 +33,7 @@ export function Footer() {
   return (
     <footer className="py-14 px-6" style={{ background: 'var(--am-navy)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-10">
           <div className="col-span-2 md:col-span-2">
             <div className="text-white font-bold text-lg mb-3 tracking-tight">
               Academy<span style={{ color: 'var(--am-purple-light)' }}>Minds</span>

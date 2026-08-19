@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 
 const NAV_LINKS = [
   { href: '#curriculum', label: 'Curriculum' },
@@ -10,8 +10,37 @@ const NAV_LINKS = [
   { href: '#pricing', label: 'Pricing' },
 ];
 
+const PROGRAM_LINKS = [
+  { href: '/grade-5-math', label: 'Grade 5 Math', desc: 'Fractions, intro algebra, Python basics' },
+  { href: '/grade-6-math', label: 'Grade 6 Math', desc: 'Full algebra, data & statistics' },
+  { href: '/grade-7-math', label: 'Grade 7 Math', desc: 'Linear equations, geometry proofs' },
+  { href: '/coding-for-kids', label: 'Coding for Kids', desc: 'Python, Grade 5–7' },
+];
+
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [programsOpen, setProgramsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close the dropdown on an outside click or Escape — standard menu behaviour,
+  // and required for it to feel like a real control rather than a sticky panel.
+  useEffect(() => {
+    if (!programsOpen) return;
+    function onPointerDown(e: PointerEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setProgramsOpen(false);
+      }
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setProgramsOpen(false);
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [programsOpen]);
 
   return (
     <header>
@@ -34,6 +63,40 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
+          {/* Programs dropdown — links to the grade/coding landing pages */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setProgramsOpen((v) => !v)}
+              aria-haspopup="menu"
+              aria-expanded={programsOpen}
+              className="relative flex items-center gap-1 text-gray-300/90 hover:text-white text-sm font-medium transition-colors"
+            >
+              Programs
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${programsOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {programsOpen && (
+              <div
+                role="menu"
+                aria-label="Programs"
+                className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-72 rounded-2xl overflow-hidden animate-fade-up"
+                style={{ background: 'rgba(26,26,46,0.98)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: 'var(--am-shadow-xl)' }}
+              >
+                {PROGRAM_LINKS.map((p) => (
+                  <Link
+                    key={p.href}
+                    href={p.href}
+                    role="menuitem"
+                    onClick={() => setProgramsOpen(false)}
+                    className="block px-4 py-3 hover:bg-white/5 transition-colors"
+                  >
+                    <div className="text-white text-sm font-semibold">{p.label}</div>
+                    <div className="text-gray-400 text-xs mt-0.5">{p.desc}</div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
           {NAV_LINKS.map((l) => (
             <a
               key={l.href}
@@ -72,6 +135,22 @@ export function Navbar() {
           className="md:hidden px-6 py-6 flex flex-col gap-4 border-t border-white/10"
           style={{ background: 'rgba(26,26,46,0.98)' }}
         >
+          <div>
+            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Programs</p>
+            <div className="flex flex-col gap-3">
+              {PROGRAM_LINKS.map((p) => (
+                <Link
+                  key={p.href}
+                  href={p.href}
+                  className="text-gray-300 hover:text-white text-base font-medium"
+                  onClick={() => setOpen(false)}
+                >
+                  {p.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
           {NAV_LINKS.map((l) => (
             <a
               key={l.href}

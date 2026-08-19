@@ -1,30 +1,6 @@
 'use client';
 
-type Grade = 5 | 6 | 7;
-
-const CURRICULUM_DATA: Record<Grade, { topic: string; canadian: string; indian: string; advantage: string }[]> = {
-  5: [
-    { topic: 'Fractions & Decimals', canadian: 'Basic fractions, Grade 5', indian: 'Advanced operations + ratios ✓', advantage: '+1.5 years' },
-    { topic: 'Algebra Concepts', canadian: 'Not introduced until Grade 7', indian: 'Variables & expressions ✓', advantage: '+2 years' },
-    { topic: 'Geometry', canadian: 'Basic shapes', indian: 'Area, perimeter, coordinate grids ✓', advantage: '+1 year' },
-    { topic: 'Coding / Logic', canadian: 'Scratch (visual blocks)', indian: 'Python fundamentals ✓', advantage: '+3 years' },
-    { topic: 'Problem-Solving', canadian: 'Word problems, basic', indian: 'Multi-step logical reasoning ✓', advantage: '+2 years' },
-  ],
-  6: [
-    { topic: 'Algebra', canadian: 'Not introduced until Grade 8', indian: 'Full chapter: equations & expressions ✓', advantage: '+2 years' },
-    { topic: 'Fractions Mastery', canadian: 'Basic operations, Grade 6', indian: 'Complex fractions + ratios ✓', advantage: '+1.5 years' },
-    { topic: 'Data & Statistics', canadian: 'Not until Grade 8', indian: 'Mean, median, mode, graphs ✓', advantage: '+2 years' },
-    { topic: 'Coding', canadian: 'Scratch / basic HTML', indian: 'Python: loops, functions, logic ✓', advantage: '+3 years' },
-    { topic: 'Number Theory', canadian: 'LCM/GCF Grade 7', indian: 'Primes, factors, divisibility rules ✓', advantage: '+1 year' },
-  ],
-  7: [
-    { topic: 'Algebra', canadian: 'Intro algebra, Grade 8', indian: 'Linear equations, inequalities ✓', advantage: '+1 year' },
-    { topic: 'Geometry Proofs', canadian: 'Not until Grade 9', indian: 'Triangle properties, congruence ✓', advantage: '+2 years' },
-    { topic: 'Percentages & Interest', canadian: 'Grade 8–9', indian: 'Full financial math ✓', advantage: '+1.5 years' },
-    { topic: 'Python Coding', canadian: 'Grade 9+ elective', indian: 'Functions, lists, mini-projects ✓', advantage: '+2 years' },
-    { topic: 'Exponents & Powers', canadian: 'Grade 9', indian: 'Laws of exponents ✓', advantage: '+2 years' },
-  ],
-};
+import { CURRICULUM_DATA, type Grade } from '@/lib/content/curriculum';
 
 interface CurriculumComparisonProps {
   selectedGrade: Grade;
@@ -95,7 +71,7 @@ export function CurriculumComparison({ selectedGrade, onGradeChange }: Curriculu
               >
                 <div className="px-4 py-4 text-white font-semibold text-sm self-center">{row.topic}</div>
                 <div className="px-4 py-4 text-red-200/90 text-sm self-center">{row.canadian}</div>
-                <div className="px-4 py-4 text-emerald-200 text-sm font-medium self-center">{row.indian}</div>
+                <div className="px-4 py-4 text-emerald-200 text-sm font-medium self-center">{row.indian} ✓</div>
                 <div className="px-4 py-4 text-center self-center">
                   <span
                     className="inline-block px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap"
