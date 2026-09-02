@@ -20,10 +20,10 @@ export function CurriculumComparison({ selectedGrade, onGradeChange }: Curriculu
         <div className="text-center mb-12">
           <p className="am-eyebrow mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>The curriculum gap</p>
           <h2 className="am-heading text-3xl sm:text-[2.5rem] text-white mb-5">
-            Where your child is today — and where they&apos;ll be with us
+            What your child covers here — and how much deeper it goes
           </h2>
           <p className="text-purple-100/85 text-lg am-measure-wide mx-auto leading-relaxed">
-            The Indian curriculum covers the same material two to three years earlier. It&apos;s documented in both the Ontario and CBSE/ICSE syllabi.
+            We follow the ICSE sequence, which goes deeper and moves faster than a typical BC classroom — so your child builds real fluency, not just familiarity.
           </p>
         </div>
 
@@ -54,9 +54,9 @@ export function CurriculumComparison({ selectedGrade, onGradeChange }: Curriculu
             <div className="grid grid-cols-[1.1fr_1.4fr_1.4fr_0.9fr] text-xs font-bold uppercase tracking-widest"
               style={{ background: 'rgba(0,0,0,0.3)', color: 'rgba(255,255,255,0.6)' }}>
               <div className="px-4 py-3.5">Topic</div>
-              <div className="px-4 py-3.5">🍁 Canadian Curriculum</div>
-              <div className="px-4 py-3.5">🇮🇳 AcademyMinds</div>
-              <div className="px-4 py-3.5 text-center">Head Start</div>
+              <div className="px-4 py-3.5">Typical BC Grade Level</div>
+              <div className="px-4 py-3.5">At AcademyMinds</div>
+              <div className="px-4 py-3.5 text-center">Our Edge</div>
             </div>
 
             {/* Rows */}
@@ -70,8 +70,8 @@ export function CurriculumComparison({ selectedGrade, onGradeChange }: Curriculu
                 }}
               >
                 <div className="px-4 py-4 text-white font-semibold text-sm self-center">{row.topic}</div>
-                <div className="px-4 py-4 text-red-200/90 text-sm self-center">{row.canadian}</div>
-                <div className="px-4 py-4 text-emerald-200 text-sm font-medium self-center">{row.indian} ✓</div>
+                <div className="px-4 py-4 text-red-200/90 text-sm self-center">{row.typical}</div>
+                <div className="px-4 py-4 text-emerald-200 text-sm font-medium self-center">{row.ours} ✓</div>
                 <div className="px-4 py-4 text-center self-center">
                   <span
                     className="inline-block px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap"
@@ -87,7 +87,7 @@ export function CurriculumComparison({ selectedGrade, onGradeChange }: Curriculu
 
         {/* Trust badges */}
         <div className="flex flex-wrap justify-center gap-4 mt-10">
-          {['CBSE Certified Teachers', 'ICSE Trained Educators', 'Ontario Curriculum Mapped'].map((b) => (
+          {['BC Owned & Operated', 'ICSE-Trained Educators', 'Small Live Cohorts'].map((b) => (
             <div
               key={b}
               className="px-4 py-2 rounded-full text-sm font-medium"

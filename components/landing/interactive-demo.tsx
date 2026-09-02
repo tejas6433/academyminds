@@ -25,14 +25,14 @@ const QUIZZES: Record<Grade, {
     question: 'Solve for x:  3x + 7 = 22',
     options: ['x = 3', 'x = 5', 'x = 7', 'x = 15'],
     correct: 1,
-    explanation: '3x + 7 = 22 → 3x = 15 → x = 5. Ontario introduces this in Grade 8; here it is Grade 6.',
+    explanation: '3x + 7 = 22 → 3x = 15 → x = 5. A typical BC Grade 7 class solves one-step equations; here it is multi-step, in Grade 6.',
   },
   7: {
     topic: 'Algebraic Identities',
     question: 'Expand:  (x + 5)²',
     options: ['x² + 25', 'x² + 5x + 25', 'x² + 10x + 25', 'x² + 10x + 10'],
     correct: 2,
-    explanation: '(a + b)² = a² + 2ab + b², so (x + 5)² = x² + 10x + 25. Ontario meets this in Grade 9–10.',
+    explanation: '(a + b)² = a² + 2ab + b², so (x + 5)² = x² + 10x + 25. Most students meet identities in high school; here it is Grade 7.',
   },
 };
 

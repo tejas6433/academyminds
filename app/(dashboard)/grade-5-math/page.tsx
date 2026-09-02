@@ -5,7 +5,7 @@ import { GradeMathPage } from '@/lib/content/grade-page';
 const TITLE = 'Grade 5 Math Tutoring — Live Online Classes';
 const FULL_TITLE = 'Grade 5 Math Tutoring — Live Online Classes | AcademyMinds';
 const DESCRIPTION =
-  'Live online Grade 5 math tutoring on the Indian (ICSE) curriculum — 3 classes a week plus a reviewed assignment after every class. Introduces algebra two years before Ontario schools. Free trial class.';
+  'Live online Grade 5 math tutoring on the Indian (ICSE) curriculum — 3 classes a week plus a reviewed assignment after every class. Goes deeper and moves faster than a typical BC Grade 5 classroom. Free trial class.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 const FAQS = [
   {
     q: 'Is my Grade 5 child ready for algebra?',
-    a: 'Yes — Ontario schools don’t introduce algebra until Grade 7, but Grade 5 is exactly when the CBSE/ICSE curriculum starts variables and expressions. Kids at this age pick up the concept easily when it’s taught with the right pacing, which is what our small-group format is built for.',
+    a: 'Yes. A typical BC Grade 5 class works on number patterns; the ICSE sequence starts variables and expressions at exactly this age. Kids pick the idea up easily when it is paced properly, which is what a small live group is built for.',
   },
   {
     q: 'What if my child is behind in fractions?',
@@ -37,7 +37,7 @@ export default function Page() {
   return (
     <GradeMathPage
       grade={5}
-      intro="The year the gap opens. Grade 5 on the Indian curriculum introduces algebraic thinking and multi-step reasoning — the exact foundations every AI and STEM career is later built on, and two years before Ontario touches them."
+      intro="The year the foundation is set. Grade 5 on the ICSE sequence introduces algebraic thinking and multi-step reasoning — the exact groundwork every AI and STEM career is later built on."
       faqs={FAQS}
     />
   );

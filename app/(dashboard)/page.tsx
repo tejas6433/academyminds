@@ -2,6 +2,7 @@ import { Navbar } from '@/components/landing/navbar';
 import { GradeExplorer } from '@/components/landing/grade-explorer';
 import { FoundingFamilies } from '@/components/landing/founding-families';
 import { InteractiveDemo } from '@/components/landing/interactive-demo';
+import { LocalStory } from '@/components/landing/local-story';
 import { Pricing } from '@/components/landing/pricing';
 import { Footer } from '@/components/landing/footer';
 
@@ -15,6 +16,7 @@ export default function LandingPage() {
         <GradeExplorer />
       </div>
       <InteractiveDemo />
+      <LocalStory />
       <FoundingFamilies />
       <Pricing />
       <Footer />

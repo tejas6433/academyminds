@@ -5,7 +5,7 @@ import { GradeMathPage } from '@/lib/content/grade-page';
 const TITLE = 'Grade 6 Math Tutoring — Live Online Classes';
 const FULL_TITLE = 'Grade 6 Math Tutoring — Live Online Classes | AcademyMinds';
 const DESCRIPTION =
-  'Live online Grade 6 math tutoring on the Indian (ICSE) curriculum — full algebra and data & statistics, 3 classes a week plus reviewed assignments. Two years ahead of the Ontario curriculum. Free trial class.';
+  'Live online Grade 6 math tutoring on the Indian (ICSE) curriculum — full algebra and data & statistics, 3 classes a week plus reviewed assignments. Deeper and faster than a typical BC Grade 6 classroom. Free trial class.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 const FAQS = [
   {
     q: 'What makes Grade 6 the biggest curriculum gap year?',
-    a: 'Ontario doesn’t introduce algebra or data & statistics until Grade 8. On the Indian curriculum, both are full Grade 6 chapters — a two-year gap on two major topics in the same year, which is why most families join us at this grade.',
+    a: 'A typical BC Grade 6 class explores equality using balance models, and formal one-step equations arrive in Grade 7. Here, Grade 6 covers multi-step equations with brackets and variables on both sides, plus a full statistics chapter. That depth gap in a single year is why most families join us at this grade.',
   },
   {
     q: 'My child is strong at math but bored in school — will this challenge them?',
@@ -37,7 +37,7 @@ export default function Page() {
   return (
     <GradeMathPage
       grade={6}
-      intro="The widest gap of any grade: full algebra and data & statistics, two full years ahead of Ontario's Grade 8 introduction. These two topics are the literal mathematics behind machine learning."
+      intro="The year the gap widens most: a full algebra chapter and a full statistics chapter, side by side. These two topics are the literal mathematics behind machine learning."
       faqs={FAQS}
     />
   );

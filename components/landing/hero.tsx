@@ -7,9 +7,9 @@ type Grade = (typeof GRADES)[number];
 
 // Factual curriculum sequencing — when each topic is introduced, not invented metrics.
 const GAP_ROWS = [
-  { topic: 'Algebra', canada: 'Grade 8', am: 'Grade 6' },
-  { topic: 'Data & statistics', canada: 'Grade 8', am: 'Grade 6' },
-  { topic: 'Geometry proofs', canada: 'Grade 9', am: 'Grade 7' },
+  { topic: 'Multi-step equations', canada: 'Grade 8', am: 'Grade 6' },
+  { topic: 'Mean, median, mode', canada: 'Grade 8', am: 'Grade 6' },
+  { topic: 'Congruence proofs', canada: 'Grade 9', am: 'Grade 7' },
 ];
 
 interface HeroProps {
@@ -37,8 +37,8 @@ export function Hero({ onGradeChange, selectedGrade }: HeroProps) {
           <p className="text-lg text-gray-300/90 am-measure-wide mb-8 leading-relaxed">
             Every model, every algorithm, every AI career starts with algebra,
             statistics and logical reasoning. We build that foundation early —
-            three live classes a week for Grade 5–7 on the Indian curriculum,
-            which teaches it two to three years before Canadian schools do.
+            three live classes a week for Grade 5–7 on the ICSE sequence, which
+            goes deeper and moves faster than a typical BC classroom.
           </p>
 
           {/* Grade selector */}
@@ -100,7 +100,7 @@ export function Hero({ onGradeChange, selectedGrade }: HeroProps) {
 
             <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 text-sm">
               <div className="text-gray-400 pb-3">Topic</div>
-              <div className="text-gray-400 pb-3 text-right">Canada</div>
+              <div className="text-gray-400 pb-3 text-right">Typical</div>
               <div className="pb-3 text-right font-semibold" style={{ color: 'var(--am-purple-light)' }}>Here</div>
 
               {GAP_ROWS.map((r, i) => (
@@ -128,7 +128,7 @@ export function Hero({ onGradeChange, selectedGrade }: HeroProps) {
             </div>
 
             <p className="text-xs text-gray-400 mt-5 leading-relaxed">
-              Based on standard CBSE/ICSE vs. Ontario curriculum sequencing.
+              Typical BC grade level vs. the ICSE sequence we teach.
             </p>
           </div>
         </div>

@@ -7,6 +7,7 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 const NAV_LINKS = [
   { href: '#curriculum', label: 'Curriculum' },
   { href: '#courses', label: 'Courses' },
+  { href: '#our-story', label: 'Our Story' },
   { href: '#pricing', label: 'Pricing' },
 ];
 

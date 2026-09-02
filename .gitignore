@@ -48,3 +48,9 @@ postgres_data/
 design beta/
 scratchpad/
 graphify-out/
+
+# Source textbooks and generated course material — never commit.
+# The repo is public, and these are third-party copyrighted works.
+Books/
+Study Material/
+__pycache__/

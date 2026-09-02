@@ -21,7 +21,7 @@ const FAQS = [
   },
   {
     q: 'How does this prepare my child for high school math?',
-    a: 'Geometry proofs and linear equations — both taught in Grade 7 here, not until Grade 9 in Ontario — are exactly the topics that determine whether a student finds Grade 9 math easy or overwhelming.',
+    a: 'Formal congruence proofs and multi-step equations are exactly the topics that decide whether a student finds high-school math straightforward or overwhelming. We teach both in Grade 7, so there are years to consolidate before it counts.',
   },
   {
     q: 'Is there a placement test before joining?',
@@ -37,7 +37,7 @@ export default function Page() {
   return (
     <GradeMathPage
       grade={7}
-      intro="The bridge to high school. Linear equations, formal proofs and algebraic identities — material Ontario students meet in Grade 9, taught here in Grade 7 so the foundation is solid before it matters."
+      intro="The bridge to high school. Linear equations, formal proofs and algebraic identities — most students meet these in high school; taught here in Grade 7, so the foundation is solid long before it matters."
       faqs={FAQS}
     />
   );

@@ -98,27 +98,27 @@ export function GradeMathPage({ grade, intro, faqs }: GradePageProps) {
         <section className="py-20 px-4 sm:px-6 bg-white">
           <div className="max-w-4xl mx-auto">
             <h2 className="am-heading text-2xl sm:text-3xl mb-3 text-center" style={{ color: 'var(--am-navy)' }}>
-              Grade {grade}: what the Canadian curriculum skips
+              Grade {grade}: how much further we go
             </h2>
             <p className="text-[var(--am-ink-500)] text-center mb-10 am-measure-wide mx-auto">
-              A side-by-side of what Ontario schools teach in Grade {grade} versus what AcademyMinds
-              covers on the Indian (CBSE/ICSE) curriculum — documented, not marketing copy.
+              A side-by-side of a typical BC Grade {grade} classroom versus what we cover on the
+              ICSE sequence — depth and pace, not just topic names.
             </p>
             <div className="overflow-x-auto rounded-[1.25rem]" style={{ boxShadow: 'var(--am-shadow-xl)', border: '1px solid var(--am-hairline-strong)' }}>
               <div className="min-w-[640px]">
                 <div className="grid grid-cols-[1.1fr_1.4fr_1.4fr_0.9fr] text-xs font-bold uppercase tracking-widest"
                   style={{ background: 'var(--am-navy)', color: 'rgba(255,255,255,0.7)' }}>
                   <div className="px-4 py-3.5">Topic</div>
-                  <div className="px-4 py-3.5">Canadian Curriculum</div>
-                  <div className="px-4 py-3.5">AcademyMinds (Grade {grade})</div>
-                  <div className="px-4 py-3.5 text-center">Head Start</div>
+                  <div className="px-4 py-3.5">Typical BC Grade Level</div>
+                  <div className="px-4 py-3.5">At AcademyMinds</div>
+                  <div className="px-4 py-3.5 text-center">Our Edge</div>
                 </div>
                 {rows.map((row, i) => (
                   <div key={row.topic} className="grid grid-cols-[1.1fr_1.4fr_1.4fr_0.9fr] border-t"
                     style={{ borderColor: 'var(--am-hairline)', background: i % 2 === 0 ? 'var(--am-bg-light)' : '#fff' }}>
                     <div className="px-4 py-4 font-semibold text-sm self-center" style={{ color: 'var(--am-navy)' }}>{row.topic}</div>
-                    <div className="px-4 py-4 text-sm self-center text-[var(--am-ink-500)]">{row.canadian}</div>
-                    <div className="px-4 py-4 text-sm font-medium self-center" style={{ color: '#15803d' }}>{row.indian} ✓</div>
+                    <div className="px-4 py-4 text-sm self-center text-[var(--am-ink-500)]">{row.typical}</div>
+                    <div className="px-4 py-4 text-sm font-medium self-center" style={{ color: '#15803d' }}>{row.ours} ✓</div>
                     <div className="px-4 py-4 text-center self-center">
                       <span className="inline-block px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap"
                         style={{ background: 'rgba(118,75,162,0.1)', color: 'var(--am-purple)' }}>

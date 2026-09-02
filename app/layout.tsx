@@ -6,7 +6,7 @@ import { SWRConfig } from 'swr';
 import { Analytics } from '@vercel/analytics/react';
 
 const SITE_DESCRIPTION =
-  'Live small-group math classes for Grade 5–7 on the Indian (ICSE) curriculum — 3 classes a week plus reviewed assignments, building the foundation every AI and STEM career is built on.';
+  'BC-owned live small-group math classes for Grade 5–7 on the ICSE sequence — 3 classes a week plus reviewed assignments, building the foundation every AI and STEM career is built on.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.BASE_URL || 'http://localhost:3000'),
@@ -23,7 +23,8 @@ export const metadata: Metadata = {
     'Grade 6 math',
     'Grade 7 math',
     'ICSE math online',
-    'live math tutoring Canada',
+    'math tutoring BC',
+    'online math tutor British Columbia',
     'Indian curriculum math',
     'CBSE math online',
     'after school math program',
@@ -105,7 +106,7 @@ export default function RootLayout({
               url: process.env.BASE_URL || 'https://academyminds.com',
               description: SITE_DESCRIPTION,
               email: 'support@academyminds.com',
-              areaServed: 'CA',
+              areaServed: { '@type': 'State', name: 'British Columbia' },
               audience: {
                 '@type': 'EducationalAudience',
                 educationalRole: 'student',
