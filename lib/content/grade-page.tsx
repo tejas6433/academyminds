@@ -7,7 +7,7 @@
 import Link from 'next/link';
 import { Navbar } from '@/components/landing/navbar';
 import { Footer } from '@/components/landing/footer';
-import { CURRICULUM_DATA, COURSES, type Grade } from '@/lib/content/curriculum';
+import { CURRICULUM_DATA, COURSES, CLASSES_PER_WEEK, type Grade } from '@/lib/content/curriculum';
 
 interface GradePageProps {
   grade: Grade;
@@ -23,7 +23,7 @@ const OTHER_GRADES: Record<Grade, Grade[]> = {
 
 export function GradeMathPage({ grade, intro, faqs }: GradePageProps) {
   const rows = CURRICULUM_DATA[grade];
-  const { math, coding } = COURSES[grade];
+  const course = COURSES[grade];
   const base = process.env.BASE_URL || 'https://academyminds.com';
 
   return (
@@ -78,7 +78,7 @@ export function GradeMathPage({ grade, intro, faqs }: GradePageProps) {
         {/* Hero */}
         <section className="am-grain relative py-24 px-4 sm:px-6" style={{ background: 'var(--am-gradient)' }}>
           <div className="relative max-w-3xl mx-auto text-center">
-            <p className="am-eyebrow mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>Grade {grade} Math &amp; Coding</p>
+            <p className="am-eyebrow mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>Grade {grade} Mathematics</p>
             <h1 className="am-display text-3xl sm:text-5xl text-white mb-5">
               Grade {grade} Math Tutoring — Live Online Classes
             </h1>
@@ -136,30 +136,54 @@ export function GradeMathPage({ grade, intro, faqs }: GradePageProps) {
         <section className="py-20 px-4 sm:px-6" style={{ background: 'var(--am-bg-light)' }}>
           <div className="max-w-4xl mx-auto">
             <h2 className="am-heading text-2xl sm:text-3xl mb-10 text-center" style={{ color: 'var(--am-navy)' }}>
-              Grade {grade} classes at AcademyMinds
+              Grade {grade} — {CLASSES_PER_WEEK} live classes a week, plus practice
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
-              {[math, coding].map((c) => (
-                <div key={c.subject} className="am-card p-7">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-xl" style={{ background: 'rgba(118,75,162,0.1)' }}>{c.icon}</span>
-                    <div>
-                      <h3 className="font-bold" style={{ color: 'var(--am-navy)' }}>{c.subject}</h3>
-                      <p className="text-xs text-[var(--am-ink-400)]">{c.frequency}</p>
-                    </div>
+              <div className="am-card p-7">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-xl" style={{ background: 'rgba(118,75,162,0.1)' }}>{course.icon}</span>
+                  <div>
+                    <h3 className="font-bold" style={{ color: 'var(--am-navy)' }}>{course.subject}</h3>
+                    <p className="text-xs text-[var(--am-ink-400)]">{course.frequency} · live, small group</p>
                   </div>
-                  <ul className="space-y-2 text-sm text-[var(--am-ink-700)]">
-                    {c.topics.map((t) => (
-                      <li key={t} className="flex items-start gap-2">
-                        <svg className="mt-0.5 h-4 w-4 flex-shrink-0" viewBox="0 0 20 20" fill="none" style={{ color: 'var(--am-purple)' }}>
-                          <path d="M5 10.5l3.2 3.2L15 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              ))}
+                <ul className="space-y-2 text-sm text-[var(--am-ink-700)]">
+                  {course.topics.map((t) => (
+                    <li key={t} className="flex items-start gap-2">
+                      <svg className="mt-0.5 h-4 w-4 flex-shrink-0" viewBox="0 0 20 20" fill="none" style={{ color: 'var(--am-purple)' }}>
+                        <path d="M5 10.5l3.2 3.2L15 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="am-card p-7">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-xl" style={{ background: 'rgba(26,26,46,0.07)' }}>📘</span>
+                  <div>
+                    <h3 className="font-bold" style={{ color: 'var(--am-navy)' }}>Practice &amp; Assignments</h3>
+                    <p className="text-xs text-[var(--am-ink-400)]">Every non-class day</p>
+                  </div>
+                </div>
+                <ul className="space-y-2 text-sm text-[var(--am-ink-700)]">
+                  {[
+                    'Assignment after every class',
+                    'Every submission reviewed and returned',
+                    'Prerequisite check before each new chapter',
+                    'Progress tracked per student',
+                    'Monthly progress report for parents',
+                  ].map((t) => (
+                    <li key={t} className="flex items-start gap-2">
+                      <svg className="mt-0.5 h-4 w-4 flex-shrink-0" viewBox="0 0 20 20" fill="none" style={{ color: 'var(--am-navy)' }}>
+                        <path d="M5 10.5l3.2 3.2L15 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </section>
@@ -192,10 +216,6 @@ export function GradeMathPage({ grade, intro, faqs }: GradePageProps) {
                   Grade {g} Math
                 </Link>
               ))}
-              <Link href="/coding-for-kids" className="am-btn px-6 text-sm"
-                style={{ border: '1px solid var(--am-hairline-strong)', color: 'var(--am-ink-700)' }}>
-                Coding for Kids
-              </Link>
             </div>
             <Link href="/enquiry" className="am-btn am-btn-primary px-10 text-base">
               Book a free Grade {grade} trial class

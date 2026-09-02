@@ -9,8 +9,8 @@ import { rateLimit, clientIp } from '@/lib/rate-limit';
 // truthy values and slip past a `!selected` guard, reaching the Stripe call
 // with undefined name/amount. A Map has no prototype chain to walk.
 const PLANS = new Map<string, { name: string; amount: number; interval: 'month'; intervalCount: number }>([
-  ['monthly', { name: 'AcademyMinds — Monthly Plan', amount: 9999, interval: 'month', intervalCount: 1 }],
-  ['quarterly', { name: 'AcademyMinds — Quarterly Plan ($79.99/mo billed quarterly)', amount: 23997, interval: 'month', intervalCount: 3 }],
+  ['monthly', { name: 'AcademyMinds — Monthly Plan', amount: 9900, interval: 'month', intervalCount: 1 }],
+  ['quarterly', { name: 'AcademyMinds — Quarterly Plan ($79/mo billed quarterly)', amount: 23700, interval: 'month', intervalCount: 3 }],
 ]);
 
 // Validate at the boundary so only known plan ids reach the lookup at all.

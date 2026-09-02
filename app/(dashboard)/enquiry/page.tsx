@@ -5,7 +5,13 @@ import { Navbar } from '@/components/landing/navbar';
 import { Footer } from '@/components/landing/footer';
 
 const GRADES = [5, 6, 7] as const;
-const SUBJECTS = ['Math', 'Coding', 'Both'] as const;
+// Math-only programme now, so instead of asking which subject, ask the thing
+// that actually helps us place the student and helps the sales conversation.
+const LEVELS = [
+  { value: 'struggling', label: 'Struggling' },
+  { value: 'on-track', label: 'Doing okay' },
+  { value: 'ahead', label: 'Ahead & bored' },
+] as const;
 
 const inputCls = 'am-input w-full px-4 py-3 rounded-[var(--am-radius-input)] border bg-white outline-none transition-shadow text-[var(--am-ink-900)]';
 const inputStyle = { borderColor: 'var(--am-hairline-strong)' } as const;
@@ -31,7 +37,7 @@ function Choice({ active, children, onClick }: { active: boolean; children: Reac
 export default function EnquiryPage() {
   const [submitted, setSubmitted] = useState(false);
   const [grade, setGrade] = useState<number | null>(null);
-  const [subject, setSubject] = useState<string | null>(null);
+  const [level, setLevel] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -48,7 +54,7 @@ export default function EnquiryPage() {
           parentName: form.get('parentName'),
           email: form.get('email'),
           grade: grade ?? undefined,
-          interest: subject ? subject.toLowerCase() : undefined,
+          interest: level ?? undefined,
           message: form.get('message') || undefined,
         }),
       });
@@ -123,11 +129,11 @@ export default function EnquiryPage() {
 
               <div>
                 <label className="block text-sm font-semibold mb-2.5" style={{ color: 'var(--am-navy)' }}>
-                  Most excited about <span className="font-normal text-[var(--am-ink-400)]">(classes cover both)</span>
+                  How is your child doing in math? <span className="font-normal text-[var(--am-ink-400)]">(optional)</span>
                 </label>
                 <div className="flex gap-3">
-                  {SUBJECTS.map((s) => (
-                    <Choice key={s} active={subject === s} onClick={() => setSubject(s)}>{s}</Choice>
+                  {LEVELS.map((l) => (
+                    <Choice key={l.value} active={level === l.value} onClick={() => setLevel(l.value)}>{l.label}</Choice>
                   ))}
                 </div>
               </div>

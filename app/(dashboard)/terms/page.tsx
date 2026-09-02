@@ -31,7 +31,7 @@ export default function TermsPage() {
           <Section title="Payments &amp; billing">
             <ul className="list-disc pl-5 space-y-1.5">
               <li>Plans are billed in advance in Canadian dollars through Stripe.</li>
-              <li>Monthly: $99.99/month. Quarterly: $79.99/month, billed $239.97 every 3 months.</li>
+              <li>Monthly: $99/month. Quarterly: $79/month, billed $237 every 3 months.</li>
               <li>Subscriptions renew automatically until cancelled. You can cancel anytime; access
                 continues to the end of the paid period.</li>
               <li>Free trial: one day, no card required.</li>

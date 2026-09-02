@@ -6,39 +6,40 @@ import { SWRConfig } from 'swr';
 import { Analytics } from '@vercel/analytics/react';
 
 const SITE_DESCRIPTION =
-  'Live small-group math and coding classes for Grade 5–7, taught by experienced educators on the Indian curriculum — typically 2–3 years ahead of Canadian grade level.';
+  'Live small-group math classes for Grade 5–7 on the Indian (ICSE) curriculum — 3 classes a week plus reviewed assignments, building the foundation every AI and STEM career is built on.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.BASE_URL || 'http://localhost:3000'),
   title: {
-    default: 'AcademyMinds - Live Math & Coding for Grade 5-7',
+    default: 'AcademyMinds - Live Math Classes for Grade 5-7',
     template: '%s · AcademyMinds',
   },
   description: SITE_DESCRIPTION,
   applicationName: 'AcademyMinds',
   keywords: [
     'online math classes',
-    'online coding classes for kids',
+    'math tutoring for kids',
     'Grade 5 math',
     'Grade 6 math',
     'Grade 7 math',
-    'Python for kids',
-    'live tutoring Canada',
+    'ICSE math online',
+    'live math tutoring Canada',
     'Indian curriculum math',
     'CBSE math online',
-    'after school math and coding',
+    'after school math program',
+    'math foundation for AI',
   ],
   alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     siteName: 'AcademyMinds',
-    title: 'AcademyMinds - Live Math & Coding for Grade 5-7',
+    title: 'AcademyMinds - Live Math Classes for Grade 5-7',
     description: SITE_DESCRIPTION,
     url: '/',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AcademyMinds - Live Math & Coding for Grade 5-7',
+    title: 'AcademyMinds - Live Math Classes for Grade 5-7',
     description: SITE_DESCRIPTION,
   },
   robots: { index: true, follow: true },
@@ -112,9 +113,9 @@ export default function RootLayout({
               },
               offers: {
                 '@type': 'Offer',
-                category: 'Live math & coding classes',
+                category: 'Live math classes',
                 priceCurrency: 'CAD',
-                price: '79.99',
+                price: '79',
               },
             }),
           }}
@@ -129,10 +130,10 @@ export default function RootLayout({
               mainEntity: [
                 {
                   '@type': 'Question',
-                  name: 'What grades and subjects does AcademyMinds teach?',
+                  name: 'What does AcademyMinds teach?',
                   acceptedAnswer: {
                     '@type': 'Answer',
-                    text: 'Live small-group math and coding classes for Grade 5–7, taught together as one program on the Indian curriculum — typically 2–3 years ahead of the Canadian grade level.',
+                    text: 'Live small-group mathematics for Grade 5–7 on the Indian (ICSE) curriculum. Students start at their current Canadian grade level and build up to the ICSE standard, which runs two to three years ahead. Three live classes a week, with a reviewed assignment after every class.',
                   },
                 },
                 {
@@ -140,7 +141,7 @@ export default function RootLayout({
                   name: 'How much does it cost?',
                   acceptedAnswer: {
                     '@type': 'Answer',
-                    text: 'CAD $99.99/month, or $79.99/month billed quarterly ($239.97 every 3 months). Both include unlimited live math and coding classes plus recordings. A free trial class is available with no card required.',
+                    text: 'CAD $99/month, or $79/month billed quarterly ($237 every 3 months). Both include three live math classes a week, an assignment after every class with feedback, class recordings, and a monthly progress report. A free trial class is available with no card required.',
                   },
                 },
                 {
@@ -148,7 +149,7 @@ export default function RootLayout({
                   name: 'Are classes live or recorded?',
                   acceptedAnswer: {
                     '@type': 'Answer',
-                    text: 'Classes are live with a real teacher. Every class is also recorded, and students can rewatch recordings for 30 days.',
+                    text: 'Classes are live with a real teacher, three times a week. Every class is recorded and students can rewatch for 30 days. On the days between classes, students complete a practice assignment that we review and return.',
                   },
                 },
                 {

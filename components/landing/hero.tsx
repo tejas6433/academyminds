@@ -8,7 +8,7 @@ type Grade = (typeof GRADES)[number];
 // Factual curriculum sequencing — when each topic is introduced, not invented metrics.
 const GAP_ROWS = [
   { topic: 'Algebra', canada: 'Grade 8', am: 'Grade 6' },
-  { topic: 'Python basics', canada: 'Grade 9', am: 'Grade 6' },
+  { topic: 'Data & statistics', canada: 'Grade 8', am: 'Grade 6' },
   { topic: 'Geometry proofs', canada: 'Grade 9', am: 'Grade 7' },
 ];
 
@@ -27,17 +27,18 @@ export function Hero({ onGradeChange, selectedGrade }: HeroProps) {
         {/* Left — message */}
         <div>
           <p className="am-eyebrow mb-5" style={{ color: 'var(--am-purple-light)' }}>
-            Live classes · Grade 5–7
+            Live math classes · Grade 5–7
           </p>
 
           <h1 className="am-display text-[2.5rem] leading-[1.05] sm:text-5xl lg:text-[3.5rem] text-white mb-6">
-            Math &amp; coding that puts your child two grades ahead.
+            The future runs on AI. AI runs on math.
           </h1>
 
           <p className="text-lg text-gray-300/90 am-measure-wide mb-8 leading-relaxed">
-            Small live classes for Grade 5–7, taught on the Indian curriculum —
-            which introduces algebra, geometry, and coding two to three years
-            earlier than Canadian schools.
+            Every model, every algorithm, every AI career starts with algebra,
+            statistics and logical reasoning. We build that foundation early —
+            three live classes a week for Grade 5–7 on the Indian curriculum,
+            which teaches it two to three years before Canadian schools do.
           </p>
 
           {/* Grade selector */}

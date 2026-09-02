@@ -5,7 +5,7 @@ import { GradeMathPage } from '@/lib/content/grade-page';
 const TITLE = 'Grade 7 Math Tutoring — Live Online Classes';
 const FULL_TITLE = 'Grade 7 Math Tutoring — Live Online Classes | AcademyMinds';
 const DESCRIPTION =
-  'Live online Grade 7 math tutoring on the Indian (CBSE/ICSE) curriculum — linear equations, geometry proofs, and object-oriented Python, up to 3 years ahead of the Ontario curriculum. Small groups, free trial class.';
+  'Live online Grade 7 math tutoring on the Indian (ICSE) curriculum — linear equations, geometry proofs and algebraic identities, 3 classes a week plus reviewed assignments. Free trial class.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -24,12 +24,12 @@ const FAQS = [
     a: 'Geometry proofs and linear equations — both taught in Grade 7 here, not until Grade 9 in Ontario — are exactly the topics that determine whether a student finds Grade 9 math easy or overwhelming.',
   },
   {
-    q: 'What does the Grade 7 coding course cover?',
-    a: 'Object-oriented programming: classes and objects, working with APIs and JSON, small web projects, and a final project where each student builds a simple game in Python.',
-  },
-  {
     q: 'Is there a placement test before joining?',
     a: 'The free trial class serves as the placement conversation — no separate testing, no pressure, just a real class so you and the teacher can both see the fit.',
+  },
+  {
+    q: 'How much homework is there, and is it actually checked?',
+    a: 'There is an assignment after every class — three a week — sized to take about 20–30 minutes. Every submission is reviewed and returned with feedback, not just marked complete.',
   },
 ];
 
@@ -37,7 +37,7 @@ export default function Page() {
   return (
     <GradeMathPage
       grade={7}
-      intro="The bridge to high school math. Grade 7 here covers linear equations, geometry proofs, and full financial math — material Ontario students won't see until Grade 9, giving your child a real head start into secondary school."
+      intro="The bridge to high school. Linear equations, formal proofs and algebraic identities — material Ontario students meet in Grade 9, taught here in Grade 7 so the foundation is solid before it matters."
       faqs={FAQS}
     />
   );

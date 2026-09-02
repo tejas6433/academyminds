@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og';
 // Dynamically-rendered Open Graph image used for link previews (social, chat,
 // search). 1200×630 is the standard OG size. No external assets — pure layout.
 export const runtime = 'edge';
-export const alt = 'AcademyMinds — live math & coding for Grade 5–7';
+export const alt = 'AcademyMinds — live math classes for Grade 5–7';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -24,10 +24,10 @@ export default function OgImage() {
         }}
       >
         <div style={{ fontSize: 34, letterSpacing: 6, color: '#c9a9e9', fontWeight: 700 }}>
-          LIVE CLASSES · GRADE 5–7
+          LIVE MATH CLASSES · GRADE 5–7
         </div>
         <div style={{ fontSize: 78, fontWeight: 800, lineHeight: 1.05, marginTop: 24, maxWidth: 980 }}>
-          Math &amp; coding that puts your child two grades ahead.
+          The future runs on AI. AI runs on math.
         </div>
         <div style={{ fontSize: 34, color: '#d9d3ea', marginTop: 32 }}>
           academyminds.com

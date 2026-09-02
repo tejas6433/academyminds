@@ -16,7 +16,7 @@ const schema = z.object({
   parentName: z.string().trim().min(1, 'Name is required').max(120),
   email: z.string().trim().email('A valid email is required').max(255),
   grade: z.coerce.number().int().min(5).max(7).optional(),
-  interest: z.enum(['math', 'coding', 'both']).optional(),
+  interest: z.enum(['struggling', 'on-track', 'ahead']).optional(),
   message: z.string().trim().max(2000).optional(),
 });
 
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       <p><strong>Parent:</strong> ${escapeHtml(parentName)}</p>
       <p><strong>Email:</strong> ${escapeHtml(email)}</p>
       <p><strong>Grade:</strong> ${grade ?? '—'}</p>
-      <p><strong>Most interested in:</strong> ${interest ?? '—'}</p>
+      <p><strong>Current math level:</strong> ${interest ?? '—'}</p>
       <p><strong>Message:</strong><br/>${message ? escapeHtml(message).replace(/\n/g, '<br/>') : '—'}</p>
     `,
   });

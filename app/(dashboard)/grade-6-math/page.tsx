@@ -5,7 +5,7 @@ import { GradeMathPage } from '@/lib/content/grade-page';
 const TITLE = 'Grade 6 Math Tutoring — Live Online Classes';
 const FULL_TITLE = 'Grade 6 Math Tutoring — Live Online Classes | AcademyMinds';
 const DESCRIPTION =
-  'Live online Grade 6 math tutoring on the Indian (CBSE/ICSE) curriculum — full algebra, data & statistics, and Python coding up to 3 years ahead of the Ontario curriculum. Small groups, real teachers, free trial class.';
+  'Live online Grade 6 math tutoring on the Indian (ICSE) curriculum — full algebra and data & statistics, 3 classes a week plus reviewed assignments. Two years ahead of the Ontario curriculum. Free trial class.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -28,8 +28,8 @@ const FAQS = [
     a: 'Cohorts run on a 10-month structure, but we place new students where they’ll succeed rather than making everyone wait for a fixed start date — ask us in a trial class and we’ll tell you honestly where your child fits.',
   },
   {
-    q: 'Do you cover the Python side for Grade 6 specifically?',
-    a: 'Yes — functions, lists and dictionaries, file I/O, and a calculator-app project, taught as a separate 2x/week course alongside math.',
+    q: 'How much homework is there, and is it actually checked?',
+    a: 'There is an assignment after every class — three a week — sized to take about 20–30 minutes. Every submission is reviewed and returned with feedback, not just marked complete. The practice is where the learning consolidates; the live class is where it is introduced.',
   },
 ];
 
@@ -37,7 +37,7 @@ export default function Page() {
   return (
     <GradeMathPage
       grade={6}
-      intro="The widest gap of any grade: full algebra and data & statistics are two full years ahead of Ontario's Grade 8 introduction. This is where most families notice their child could be doing so much more."
+      intro="The widest gap of any grade: full algebra and data & statistics, two full years ahead of Ontario's Grade 8 introduction. These two topics are the literal mathematics behind machine learning."
       faqs={FAQS}
     />
   );

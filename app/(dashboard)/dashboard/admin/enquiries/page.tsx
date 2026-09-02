@@ -4,10 +4,15 @@ import Link from 'next/link';
 import { requireRole } from '@/lib/auth/guards';
 import { getEnquiries } from '@/lib/db/queries';
 
+// Current values first; the three legacy subject values are kept so enquiries
+// captured before the math-only switch still render as something meaningful.
 const INTEREST_LABEL: Record<string, string> = {
-  math: 'Math',
-  coding: 'Coding',
-  both: 'Both',
+  struggling: 'Struggling',
+  'on-track': 'Doing okay',
+  ahead: 'Ahead & bored',
+  math: 'Math (legacy)',
+  coding: 'Coding (legacy)',
+  both: 'Both (legacy)',
 };
 
 export default async function EnquiriesPage() {

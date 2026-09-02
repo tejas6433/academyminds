@@ -11,10 +11,9 @@ const NAV_LINKS = [
 ];
 
 const PROGRAM_LINKS = [
-  { href: '/grade-5-math', label: 'Grade 5 Math', desc: 'Fractions, intro algebra, Python basics' },
+  { href: '/grade-5-math', label: 'Grade 5 Math', desc: 'Fractions, intro algebra, problem solving' },
   { href: '/grade-6-math', label: 'Grade 6 Math', desc: 'Full algebra, data & statistics' },
   { href: '/grade-7-math', label: 'Grade 7 Math', desc: 'Linear equations, geometry proofs' },
-  { href: '/coding-for-kids', label: 'Coding for Kids', desc: 'Python, Grade 5–7' },
 ];
 
 export function Navbar() {
@@ -63,7 +62,7 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
-          {/* Programs dropdown — links to the grade/coding landing pages */}
+          {/* Programs dropdown — links to the grade-level landing pages */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setProgramsOpen((v) => !v)}

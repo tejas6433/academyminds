@@ -16,7 +16,6 @@ const COLUMNS = [
       { label: 'Grade 5 Math', href: '/grade-5-math' },
       { label: 'Grade 6 Math', href: '/grade-6-math' },
       { label: 'Grade 7 Math', href: '/grade-7-math' },
-      { label: 'Coding for Kids', href: '/coding-for-kids' },
     ],
   },
   {
@@ -39,7 +38,7 @@ export function Footer() {
               Academy<span style={{ color: 'var(--am-purple-light)' }}>Minds</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed am-measure">
-              Live math and coding classes for Grade 5–7, taught on the Indian curriculum
+              Live math classes for Grade 5–7, taught on the Indian curriculum
               — two to three years ahead of grade level.
             </p>
             <a
