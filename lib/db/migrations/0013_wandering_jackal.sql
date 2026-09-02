@@ -1,0 +1,1 @@
+ALTER TABLE "children" ALTER COLUMN "subject_interest" SET DEFAULT 'on-track';

@@ -136,7 +136,7 @@ const signUpSchema = z.object({
   accountType: z.enum(['parent', 'student']).optional(),
   childName: z.string().optional(),
   childGrade: z.coerce.number().int().min(5).max(7).optional(),
-  subjectInterest: z.enum(['math', 'coding', 'both']).optional(),
+  subjectInterest: z.enum(['struggling', 'on-track', 'ahead']).optional(),
   // Checkbox posts 'on' when ticked. Required — no account without consent.
   consent: z.literal('on', { errorMap: () => ({ message: 'Please confirm you agree and have guardian consent.' }) })
 });
@@ -268,7 +268,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData): Prom
       parentId: createdUser.id,
       name: childName,
       gradeLevel: childGrade,
-      subjectInterest: subjectInterest ?? 'both'
+      subjectInterest: subjectInterest ?? 'on-track'
     });
   }
 

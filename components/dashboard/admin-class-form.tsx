@@ -92,7 +92,6 @@ export function AdminClassForm({ teachers }: { teachers: Teacher[] }) {
           <label className="block am-eyebrow text-[var(--am-ink-400)] mb-1.5">Subject</label>
           <select className={inputCls} style={ring} value={subject} onChange={(e) => setSubject(e.target.value as 'math' | 'coding')}>
             <option value="math">Math</option>
-            <option value="coding">Coding</option>
           </select>
         </div>
 

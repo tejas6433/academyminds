@@ -104,7 +104,9 @@ export const children = pgTable('children', {
   parentId: integer('parent_id').notNull().references(() => users.id),
   name: varchar('name', { length: 100 }).notNull(),
   gradeLevel: integer('grade_level').notNull(), // 5, 6, or 7
-  subjectInterest: varchar('subject_interest', { length: 20 }).notNull().default('both'), // 'math' | 'coding' | 'both'
+  // Current math level at sign-up: 'struggling' | 'on-track' | 'ahead'.
+  // Legacy rows may hold the pre-pivot subject values ('math'|'coding'|'both').
+  subjectInterest: varchar('subject_interest', { length: 20 }).notNull().default('on-track'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 

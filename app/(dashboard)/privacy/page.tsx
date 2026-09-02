@@ -17,7 +17,7 @@ export default function PrivacyPage() {
 
         <div className="prose-am space-y-6 text-[var(--am-ink-700)] leading-relaxed">
           <p>
-            AcademyMinds (&quot;we&quot;, &quot;us&quot;) provides live online math and coding classes for
+            AcademyMinds (&quot;we&quot;, &quot;us&quot;) provides live online mathematics classes for
             students in Grades 5–7. This policy explains what personal information we collect, why, and the
             choices you have. We serve families in Canada and follow PIPEDA and BC&apos;s PIPA.
           </p>

@@ -44,7 +44,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
           <ul className="space-y-5">
             {[
               { n: '1', t: 'Live, small-group classes', d: 'Scheduled sessions with an experienced teacher — not pre-recorded videos.' },
-              { n: '2', t: 'A curriculum that runs ahead', d: 'Indian-curriculum math & coding, two to three years ahead of grade level.' },
+              { n: '2', t: 'A curriculum that runs ahead', d: 'Indian-curriculum mathematics, two to three years ahead of grade level.' },
               { n: '3', t: 'Everything in one place', d: 'Schedule, calendar sync, and class recordings on your dashboard.' },
             ].map((s) => (
               <li key={s.n} className="flex gap-4">
@@ -154,17 +154,17 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                         </select>
                       </div>
                       <div>
-                        <Label htmlFor="subjectInterest" className="text-sm font-medium text-gray-700">Most excited about</Label>
+                        <Label htmlFor="subjectInterest" className="text-sm font-medium text-gray-700">Current math level</Label>
                         <select
                           id="subjectInterest"
                           name="subjectInterest"
-                          defaultValue="both"
+                          defaultValue="on-track"
                           className="am-input mt-1 w-full px-3 py-2 rounded-lg border text-sm outline-none transition-shadow"
                           style={{ borderColor: 'var(--am-hairline-strong)' }}
                         >
-                          <option value="both">Equally both</option>
-                          <option value="math">Math</option>
-                          <option value="coding">Coding</option>
+                          <option value="struggling">Struggling</option>
+                          <option value="on-track">Doing okay</option>
+                          <option value="ahead">Ahead &amp; bored</option>
                         </select>
                       </div>
                     </div>

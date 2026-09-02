@@ -24,7 +24,7 @@ export default function TermsPage() {
           </Section>
 
           <Section title="The service">
-            <p>We provide scheduled live online classes in math and coding for Grades 5–7, along with
+            <p>We provide scheduled live online mathematics classes for Grades 5–7, along with
               recordings and a schedule dashboard. Class times, teachers, and curriculum may change.</p>
           </Section>
 

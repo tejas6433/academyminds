@@ -60,7 +60,7 @@ function shell(heading: string, body: string, cta?: { label: string; url: string
         }
       </div>
       <div style="padding:16px 28px;color:#908ca0;font-size:12px;border-top:1px solid #f0f0f0">
-        © ${new Date().getFullYear()} AcademyMinds · Grade 5–7 live math &amp; coding
+        © ${new Date().getFullYear()} AcademyMinds · Grade 5–7 live mathematics classes
       </div>
     </div>
   </div>`;
