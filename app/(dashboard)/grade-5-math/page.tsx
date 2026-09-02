@@ -5,7 +5,7 @@ import { GradeMathPage } from '@/lib/content/grade-page';
 const TITLE = 'Grade 5 Math Tutoring — Live Online Classes';
 const FULL_TITLE = 'Grade 5 Math Tutoring — Live Online Classes | AcademyMinds';
 const DESCRIPTION =
-  'Live online Grade 5 math tutoring on the Indian (ICSE) curriculum — 3 classes a week plus a reviewed assignment after every class. Goes deeper and moves faster than a typical BC Grade 5 classroom. Free trial class.';
+  'Live online Grade 5 math tutoring on the AcademyMinds accelerated curriculum — 3 classes a week plus a reviewed assignment after every class. Goes deeper and moves faster than a typical BC Grade 5 classroom. BC owned. Free trial class.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 const FAQS = [
   {
     q: 'Is my Grade 5 child ready for algebra?',
-    a: 'Yes. A typical BC Grade 5 class works on number patterns; the ICSE sequence starts variables and expressions at exactly this age. Kids pick the idea up easily when it is paced properly, which is what a small live group is built for.',
+    a: 'Yes. A typical BC Grade 5 class works on number patterns; our curriculum starts variables and expressions at exactly this age. Kids pick the idea up easily when it is paced properly, which is what a small live group is built for.',
   },
   {
     q: 'What if my child is behind in fractions?',
@@ -37,7 +37,7 @@ export default function Page() {
   return (
     <GradeMathPage
       grade={5}
-      intro="The year the foundation is set. Grade 5 on the ICSE sequence introduces algebraic thinking and multi-step reasoning — the exact groundwork every AI and STEM career is later built on."
+      intro="The year the foundation is set. Our Grade 5 curriculum introduces algebraic thinking and multi-step reasoning — the exact groundwork every AI and STEM career is later built on."
       faqs={FAQS}
     />
   );

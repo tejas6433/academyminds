@@ -39,8 +39,8 @@ export function Footer() {
               Academy<span style={{ color: 'var(--am-purple-light)' }}>Minds</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed am-measure">
-              Live math classes for Grade 5–7, taught on the Indian curriculum
-              — two to three years ahead of grade level.
+              Live math classes for Grade 5–7 on our own accelerated curriculum.
+              BC owned and operated.
             </p>
             <a
               href="mailto:support@academyminds.com"

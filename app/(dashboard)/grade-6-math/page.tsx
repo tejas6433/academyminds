@@ -5,7 +5,7 @@ import { GradeMathPage } from '@/lib/content/grade-page';
 const TITLE = 'Grade 6 Math Tutoring — Live Online Classes';
 const FULL_TITLE = 'Grade 6 Math Tutoring — Live Online Classes | AcademyMinds';
 const DESCRIPTION =
-  'Live online Grade 6 math tutoring on the Indian (ICSE) curriculum — full algebra and data & statistics, 3 classes a week plus reviewed assignments. Deeper and faster than a typical BC Grade 6 classroom. Free trial class.';
+  'Live online Grade 6 math tutoring on the AcademyMinds accelerated curriculum — full algebra and data & statistics, 3 classes a week plus reviewed assignments. Deeper and faster than a typical BC Grade 6 classroom. BC owned. Free trial class.';
 
 export const metadata: Metadata = {
   title: TITLE,

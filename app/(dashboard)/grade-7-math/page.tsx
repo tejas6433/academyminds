@@ -5,7 +5,7 @@ import { GradeMathPage } from '@/lib/content/grade-page';
 const TITLE = 'Grade 7 Math Tutoring — Live Online Classes';
 const FULL_TITLE = 'Grade 7 Math Tutoring — Live Online Classes | AcademyMinds';
 const DESCRIPTION =
-  'Live online Grade 7 math tutoring on the Indian (ICSE) curriculum — linear equations, geometry proofs and algebraic identities, 3 classes a week plus reviewed assignments. Free trial class.';
+  'Live online Grade 7 math tutoring on the AcademyMinds accelerated curriculum — linear equations, geometry proofs and algebraic identities, 3 classes a week plus reviewed assignments. BC owned. Free trial class.';
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -23,7 +23,7 @@ export function CurriculumComparison({ selectedGrade, onGradeChange }: Curriculu
             What your child covers here — and how much deeper it goes
           </h2>
           <p className="text-purple-100/85 text-lg am-measure-wide mx-auto leading-relaxed">
-            We follow the ICSE sequence, which goes deeper and moves faster than a typical BC classroom — so your child builds real fluency, not just familiarity.
+            Our curriculum is built in-house and sequenced to go deeper and move faster than a typical BC classroom — so your child builds real fluency, not just familiarity.
           </p>
         </div>
 
@@ -87,7 +87,7 @@ export function CurriculumComparison({ selectedGrade, onGradeChange }: Curriculu
 
         {/* Trust badges */}
         <div className="flex flex-wrap justify-center gap-4 mt-10">
-          {['BC Owned & Operated', 'ICSE-Trained Educators', 'Small Live Cohorts'].map((b) => (
+          {['BC Owned & Operated', 'Purpose-Built Curriculum', 'Small Live Cohorts'].map((b) => (
             <div
               key={b}
               className="px-4 py-2 rounded-full text-sm font-medium"

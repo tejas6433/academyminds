@@ -43,7 +43,7 @@ async function seed() {
         gradeLevel: 6,
         teacherId,
         teacherName: 'Rajan Sharma',
-        teacherTitle: 'B.Ed, CBSE Math Specialist',
+        teacherTitle: 'B.Ed, Mathematics Specialist',
         dayOfWeek: 1, // Monday
         startTimeUtc: '16:00:00',
         durationMinutes: 60,

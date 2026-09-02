@@ -6,7 +6,7 @@ import { SWRConfig } from 'swr';
 import { Analytics } from '@vercel/analytics/react';
 
 const SITE_DESCRIPTION =
-  'BC-owned live small-group math classes for Grade 5–7 on the ICSE sequence — 3 classes a week plus reviewed assignments, building the foundation every AI and STEM career is built on.';
+  'BC-owned live small-group math classes for Grade 5–7. Our own accelerated curriculum, 3 classes a week plus reviewed assignments — building the foundation every AI and STEM career is built on.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.BASE_URL || 'http://localhost:3000'),
@@ -22,11 +22,11 @@ export const metadata: Metadata = {
     'Grade 5 math',
     'Grade 6 math',
     'Grade 7 math',
-    'ICSE math online',
+    'accelerated math program',
     'math tutoring BC',
     'online math tutor British Columbia',
-    'Indian curriculum math',
-    'CBSE math online',
+    'advanced math for kids',
+    'gifted math program BC',
     'after school math program',
     'math foundation for AI',
   ],
@@ -134,7 +134,7 @@ export default function RootLayout({
                   name: 'What does AcademyMinds teach?',
                   acceptedAnswer: {
                     '@type': 'Answer',
-                    text: 'Live small-group mathematics for Grade 5–7 on the Indian (ICSE) curriculum. Students start at their current Canadian grade level and build up to the ICSE standard, which runs two to three years ahead. Three live classes a week, with a reviewed assignment after every class.',
+                    text: 'Live small-group mathematics for Grade 5–7 taught on the AcademyMinds curriculum — our own accelerated sequence, built to take a student from their current grade level to a genuinely advanced standard. Three live classes a week, with a reviewed assignment after every class.',
                   },
                 },
                 {

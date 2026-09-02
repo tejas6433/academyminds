@@ -37,8 +37,9 @@ export function Hero({ onGradeChange, selectedGrade }: HeroProps) {
           <p className="text-lg text-gray-300/90 am-measure-wide mb-8 leading-relaxed">
             Every model, every algorithm, every AI career starts with algebra,
             statistics and logical reasoning. We build that foundation early —
-            three live classes a week for Grade 5–7 on the ICSE sequence, which
-            goes deeper and moves faster than a typical BC classroom.
+            three live classes a week for Grade 5–7 on the AcademyMinds
+            curriculum — built to go deeper and move faster than a typical
+            BC classroom.
           </p>
 
           {/* Grade selector */}
@@ -128,7 +129,7 @@ export function Hero({ onGradeChange, selectedGrade }: HeroProps) {
             </div>
 
             <p className="text-xs text-gray-400 mt-5 leading-relaxed">
-              Typical BC grade level vs. the ICSE sequence we teach.
+              Typical BC grade level vs. the AcademyMinds curriculum.
             </p>
           </div>
         </div>

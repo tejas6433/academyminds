@@ -101,8 +101,8 @@ export function GradeMathPage({ grade, intro, faqs }: GradePageProps) {
               Grade {grade}: how much further we go
             </h2>
             <p className="text-[var(--am-ink-500)] text-center mb-10 am-measure-wide mx-auto">
-              A side-by-side of a typical BC Grade {grade} classroom versus what we cover on the
-              ICSE sequence — depth and pace, not just topic names.
+              A side-by-side of a typical BC Grade {grade} classroom versus the AcademyMinds
+              curriculum — depth and pace, not just topic names.
             </p>
             <div className="overflow-x-auto rounded-[1.25rem]" style={{ boxShadow: 'var(--am-shadow-xl)', border: '1px solid var(--am-hairline-strong)' }}>
               <div className="min-w-[640px]">
