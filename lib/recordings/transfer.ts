@@ -36,7 +36,9 @@ export async function transferRecording(
 ): Promise<'ready' | 'skipped' | 'failed'> {
   if (!isR2Configured()) return 'skipped';
 
-  const staleBefore = new Date(Date.now() - STALE_MS);
+  // ISO string + explicit cast: a JS Date interpolated into a raw sql`` fragment
+  // is not serialisable by the driver and throws at bind time.
+  const staleBefore = new Date(Date.now() - STALE_MS).toISOString();
 
   // Atomic claim: succeeds only if the row is transferable and under the attempt
   // cap. Transferable = pending/failed, OR a 'transferring' row whose claim went
@@ -54,7 +56,7 @@ export async function transferRecording(
         eq(recordings.id, recordingId),
         isNotNull(recordings.zoomDownloadUrl),
         lt(recordings.transferAttempts, MAX_ATTEMPTS),
-        sql`(${recordings.status} IN ('pending','failed') OR (${recordings.status} = 'transferring' AND (${recordings.transferStartedAt} IS NULL OR ${recordings.transferStartedAt} < ${staleBefore})))`
+        sql`(${recordings.status} IN ('pending','failed') OR (${recordings.status} = 'transferring' AND (${recordings.transferStartedAt} IS NULL OR ${recordings.transferStartedAt} < ${staleBefore}::timestamp)))`
       )
     )
     .returning();
@@ -111,7 +113,9 @@ export async function transferRecording(
 export async function processPendingTransfers(): Promise<{ processed: number; ready: number; failed: number }> {
   if (!isR2Configured()) return { processed: 0, ready: 0, failed: 0 };
 
-  const staleBefore = new Date(Date.now() - STALE_MS);
+  // ISO string + explicit cast: a JS Date interpolated into a raw sql`` fragment
+  // is not serialisable by the driver and throws at bind time.
+  const staleBefore = new Date(Date.now() - STALE_MS).toISOString();
 
   const candidates = await db
     .select({ id: recordings.id })
@@ -120,7 +124,7 @@ export async function processPendingTransfers(): Promise<{ processed: number; re
       and(
         isNotNull(recordings.zoomDownloadUrl),
         lt(recordings.transferAttempts, MAX_ATTEMPTS),
-        sql`(${recordings.status} IN ('pending','failed') OR (${recordings.status} = 'transferring' AND (${recordings.transferStartedAt} IS NULL OR ${recordings.transferStartedAt} < ${staleBefore})))`
+        sql`(${recordings.status} IN ('pending','failed') OR (${recordings.status} = 'transferring' AND (${recordings.transferStartedAt} IS NULL OR ${recordings.transferStartedAt} < ${staleBefore}::timestamp)))`
       )
     )
     .limit(20); // bound the batch so a cron run stays within time limits
