@@ -15,6 +15,7 @@ import { AddStaffForm } from '@/components/dashboard/add-staff-form';
 import { DeleteClassButton } from '@/components/dashboard/delete-class-button';
 import { AdminZoomCell } from '@/components/dashboard/admin-zoom-cell';
 import { AdminEnrollCell } from '@/components/dashboard/admin-enroll-cell';
+import { WeeklyCalendar } from '@/components/dashboard/weekly-calendar';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -112,6 +113,24 @@ export default async function AdminDashboard() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Weekly timetable */}
+      <h2 className="am-heading text-lg font-bold mb-3" style={{ color: 'var(--am-navy)' }}>This week</h2>
+      <div className="mb-10">
+        <WeeklyCalendar
+          entries={allClasses.map((c) => ({
+            id: c.id,
+            name: c.name,
+            gradeLevel: c.gradeLevel,
+            dayOfWeek: c.dayOfWeek,
+            startTimeUtc: c.startTimeUtc,
+            durationMinutes: c.durationMinutes,
+            teacherName: c.teacherName,
+            hasMeeting: Boolean(c.zoomMeetingId),
+          }))}
+          emptyMessage="No classes yet. Create one below and it will appear here."
+        />
       </div>
 
       {/* Classes */}

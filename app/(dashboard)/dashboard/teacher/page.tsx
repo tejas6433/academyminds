@@ -7,6 +7,7 @@ import {
 import { requireRole } from '@/lib/auth/guards';
 import { TeacherClassCard } from '@/components/dashboard/teacher-class-card';
 import { isZoomConfigured } from '@/lib/zoom';
+import { WeeklyCalendar } from '@/components/dashboard/weekly-calendar';
 
 export default async function TeacherDashboard() {
   const user = await requireRole(['teacher']);
@@ -47,6 +48,23 @@ export default async function TeacherDashboard() {
         <p className="text-[var(--am-ink-500)] text-sm mt-1.5">
           Manage your classes, launch live sessions, and publish recordings.
         </p>
+      </div>
+
+      <h2 className="am-heading text-lg font-bold mb-3" style={{ color: 'var(--am-navy)' }}>Your week</h2>
+      <div className="mb-10">
+        <WeeklyCalendar
+          entries={myClasses.map((c) => ({
+            id: c.id,
+            name: c.name,
+            gradeLevel: c.gradeLevel,
+            dayOfWeek: c.dayOfWeek,
+            startTimeUtc: c.startTimeUtc,
+            durationMinutes: c.durationMinutes,
+            teacherName: c.teacherName,
+            hasMeeting: Boolean(c.zoomMeetingId),
+          }))}
+          emptyMessage="No classes assigned to you yet."
+        />
       </div>
 
       {!zoomReady && (

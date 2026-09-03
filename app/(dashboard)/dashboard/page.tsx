@@ -12,6 +12,7 @@ import {
 } from '@/lib/db/queries';
 import { nextClassInstance, todaysClasses } from '@/lib/schedule';
 import { StudentDashboardView } from '@/components/dashboard/student-dashboard-view';
+import { WeeklyCalendar } from '@/components/dashboard/weekly-calendar';
 
 export default async function StudentDashboardPage() {
   const user = await requireRole(['student']);
@@ -27,7 +28,19 @@ export default async function StudentDashboardPage() {
 
   const subjects = Array.from(new Set(enrolled.map((c) => c.subject)));
 
+  const calendarEntries = enrolled.map((c) => ({
+    id: c.id,
+    name: c.name,
+    gradeLevel: c.gradeLevel,
+    dayOfWeek: c.dayOfWeek,
+    startTimeUtc: c.startTimeUtc,
+    durationMinutes: c.durationMinutes,
+    teacherName: c.teacherName,
+    hasMeeting: Boolean(c.zoomMeetingId),
+  }));
+
   return (
+    <>
     <StudentDashboardView
       greetingName={user.name}
       isAdmin={isAdmin}
@@ -39,5 +52,15 @@ export default async function StudentDashboardPage() {
         recordings: recordings.length,
       }}
     />
+    <section className="flex-1 px-4 lg:px-8 pb-10 max-w-5xl mx-auto w-full">
+      <h2 className="am-heading text-lg font-bold mb-3" style={{ color: 'var(--am-navy)' }}>
+        {isAdmin ? 'Full timetable' : 'Your week'}
+      </h2>
+      <WeeklyCalendar
+        entries={calendarEntries}
+        emptyMessage={isAdmin ? 'No classes exist yet.' : 'You are not enrolled in any classes yet.'}
+      />
+    </section>
+    </>
   );
 }
