@@ -8,6 +8,7 @@ import { requireRole } from '@/lib/auth/guards';
 import { TeacherClassCard } from '@/components/dashboard/teacher-class-card';
 import { isZoomConfigured } from '@/lib/zoom';
 import { WeeklyCalendar } from '@/components/dashboard/weekly-calendar';
+import { nextClassInstance } from '@/lib/schedule';
 
 export default async function TeacherDashboard() {
   const user = await requireRole(['teacher']);
@@ -38,6 +39,11 @@ export default async function TeacherDashboard() {
 
   const zoomReady = isZoomConfigured();
 
+  // Surface the next class up front — a teacher opening the dashboard minutes
+  // before a lesson should not have to read a week grid to find where to go.
+  const upcoming = nextClassInstance(myClasses);
+  const upcomingClass = upcoming ? myClasses.find((c) => c.id === upcoming.id) ?? null : null;
+
   return (
     <section className="flex-1 p-4 lg:p-8 max-w-4xl mx-auto w-full">
       <div className="mb-8">
@@ -49,6 +55,34 @@ export default async function TeacherDashboard() {
           Manage your classes, launch live sessions, and publish recordings.
         </p>
       </div>
+
+      {upcoming && upcomingClass && (
+        <div className="am-card-raised p-6 mb-8 flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <p className="am-eyebrow mb-1" style={{ color: 'var(--am-purple)' }}>Next class</p>
+            <p className="font-bold text-lg" style={{ color: 'var(--am-navy)' }}>{upcoming.name}</p>
+            <p className="text-sm text-[var(--am-ink-500)] mt-0.5">
+              {new Date(upcoming.startsAt).toLocaleString([], {
+                weekday: 'long', hour: 'numeric', minute: '2-digit',
+              })} · Grade {upcoming.gradeLevel}
+            </p>
+          </div>
+          {upcomingClass.zoomStartUrl ? (
+            <a
+              href={upcomingClass.zoomStartUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="am-btn am-btn-primary px-7"
+            >
+              Start class
+            </a>
+          ) : (
+            <span className="text-sm font-semibold" style={{ color: '#d97706' }}>
+              No Zoom meeting yet — create one below.
+            </span>
+          )}
+        </div>
+      )}
 
       <h2 className="am-heading text-lg font-bold mb-3" style={{ color: 'var(--am-navy)' }}>Your week</h2>
       <div className="mb-10">

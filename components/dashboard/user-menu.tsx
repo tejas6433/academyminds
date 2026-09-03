@@ -71,6 +71,14 @@ export function UserMenu({ email, role }: { email: string; role: string }) {
           >
             Password &amp; security
           </Link>
+          <Link
+            href="/dashboard/activity"
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
+          >
+            Recent activity
+          </Link>
 
           <form action={signOut} className="border-t border-white/10">
             <button
