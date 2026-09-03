@@ -1,6 +1,7 @@
 // app/(dashboard)/dashboard/recordings/page.tsx
 import { redirect } from 'next/navigation';
 import { DeleteRecordingButton } from '@/components/dashboard/delete-recording-button';
+import { RecordingVisibilityToggle } from '@/components/dashboard/recording-visibility-toggle';
 import {
   getUser,
   getRecordingsForStudent,
@@ -15,6 +16,8 @@ export default async function RecordingsPage() {
   // Scope by role. The student view is enrolment-filtered, which meant admins
   // and teachers — who are not enrolled in anything — saw an empty page even
   // when recordings existed.
+  const isStaff = user.role === 'admin' || user.role === 'teacher';
+
   const recordings =
     user.role === 'admin'
       ? await getAllRecordings()
@@ -95,6 +98,7 @@ export default async function RecordingsPage() {
                   </div>
                   <span className="text-sm font-bold whitespace-nowrap" style={{ color: 'var(--am-purple)' }}>Watch →</span>
                 </a>
+                {isStaff && <RecordingVisibilityToggle recordingId={r.id} published={r.published === 1} />}
                 {user.role === 'admin' && <DeleteRecordingButton recordingId={r.id} title={r.title} />}
                 </div>
               );
@@ -113,6 +117,7 @@ export default async function RecordingsPage() {
                   <span className="text-xs font-semibold whitespace-nowrap text-[var(--am-ink-400)]">
                     {processing ? 'Processing…' : 'Unavailable'}
                   </span>
+                  {isStaff && <RecordingVisibilityToggle recordingId={r.id} published={r.published === 1} />}
                   {user.role === 'admin' && <DeleteRecordingButton recordingId={r.id} title={r.title} />}
                 </span>
               </div>
