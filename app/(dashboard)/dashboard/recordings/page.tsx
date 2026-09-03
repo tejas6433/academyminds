@@ -1,12 +1,25 @@
 // app/(dashboard)/dashboard/recordings/page.tsx
 import { redirect } from 'next/navigation';
-import { getUser, getRecordingsForStudent } from '@/lib/db/queries';
+import {
+  getUser,
+  getRecordingsForStudent,
+  getAllRecordings,
+  getRecordingsForTeacher,
+} from '@/lib/db/queries';
 
 export default async function RecordingsPage() {
   const user = await getUser();
   if (!user) redirect('/sign-in');
 
-  const recordings = await getRecordingsForStudent(user.id);
+  // Scope by role. The student view is enrolment-filtered, which meant admins
+  // and teachers — who are not enrolled in anything — saw an empty page even
+  // when recordings existed.
+  const recordings =
+    user.role === 'admin'
+      ? await getAllRecordings()
+      : user.role === 'teacher'
+        ? await getRecordingsForTeacher(user.id)
+        : await getRecordingsForStudent(user.id);
 
   return (
     <section className="flex-1 p-4 lg:p-8 max-w-4xl mx-auto w-full">
@@ -15,12 +28,22 @@ export default async function RecordingsPage() {
         <h1 className="am-heading text-3xl" style={{ color: 'var(--am-navy)' }}>
           Class Recordings
         </h1>
-        <p className="text-[var(--am-ink-500)] text-sm mt-1.5">Catch up on any class you missed — recordings post automatically.</p>
+        <p className="text-[var(--am-ink-500)] text-sm mt-1.5">
+            {user.role === 'admin'
+              ? 'All recordings across every class.'
+              : user.role === 'teacher'
+                ? 'Recordings from the classes you teach.'
+                : 'Catch up on any class you missed — recordings post automatically.'}
+          </p>
       </div>
 
       {recordings.length === 0 ? (
         <div className="am-card p-10 text-center">
-          <p className="text-[var(--am-ink-500)]">No recordings yet. They&apos;ll appear here after your classes.</p>
+          <p className="text-[var(--am-ink-500)]">
+            {user.role === 'student'
+              ? 'No recordings yet. They\u2019ll appear here after your classes.'
+              : 'No recordings yet. They\u2019ll appear here automatically after a recorded class.'}
+          </p>
         </div>
       ) : (
         <div className="space-y-3">

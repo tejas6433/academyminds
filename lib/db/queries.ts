@@ -199,6 +199,23 @@ export async function getRecordingsForStudent(userId: number) {
     .orderBy(desc(recordings.recordedAt));
 }
 
+/** Every recording, newest first (admin view — not scoped to enrolment). */
+export async function getAllRecordings(limit = 200) {
+  return db.select().from(recordings).orderBy(desc(recordings.recordedAt)).limit(limit);
+}
+
+/** Recordings for the classes a given teacher owns. */
+export async function getRecordingsForTeacher(teacherId: number) {
+  const own = await db.select({ id: classes.id }).from(classes).where(eq(classes.teacherId, teacherId));
+  const ids = own.map((c) => c.id);
+  if (ids.length === 0) return [];
+  return db
+    .select()
+    .from(recordings)
+    .where(inArray(recordings.classId, ids))
+    .orderBy(desc(recordings.recordedAt));
+}
+
 /** All enquiries, newest first (admin view). */
 export async function getEnquiries(limit = 200) {
   return db.select().from(enquiries).orderBy(desc(enquiries.createdAt)).limit(limit);
