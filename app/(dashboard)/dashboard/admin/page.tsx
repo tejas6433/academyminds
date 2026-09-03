@@ -13,6 +13,7 @@ import { AdminClassForm } from '@/components/dashboard/admin-class-form';
 import { AdminUserRow } from '@/components/dashboard/admin-user-row';
 import { AddTeacherForm } from '@/components/dashboard/add-teacher-form';
 import { DeleteClassButton } from '@/components/dashboard/delete-class-button';
+import { AdminZoomCell } from '@/components/dashboard/admin-zoom-cell';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -141,11 +142,7 @@ export default async function AdminDashboard() {
                   <td className="py-3.5 px-5 text-[var(--am-ink-500)]">{c.teacherName}</td>
                   <td className="py-3.5 px-5 text-[var(--am-ink-500)]">{DAY_NAMES[c.dayOfWeek]} {c.startTimeUtc.slice(0, 5)}</td>
                   <td className="py-3.5 px-5">
-                    {c.zoomMeetingId ? (
-                      <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(34,197,94,0.1)', color: '#16a34a' }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: '#16a34a' }} />Ready</span>
-                    ) : (
-                      <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(107,114,128,0.1)', color: '#6b7280' }}>—</span>
-                    )}
+                    <AdminZoomCell classId={c.id} hasMeeting={Boolean(c.zoomMeetingId)} />
                   </td>
                   <td className="py-3.5 px-5 text-right">
                     <DeleteClassButton classId={c.id} className={c.name} />
