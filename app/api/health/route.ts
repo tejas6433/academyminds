@@ -56,5 +56,28 @@ export async function GET(request: NextRequest) {
       hasResendKey: Boolean(process.env.RESEND_API_KEY),
       baseUrl: process.env.BASE_URL ?? null,
     },
+    // Recording pipeline config. A recording stuck at status=pending with
+    // transfer_attempts=0 means the transfer skipped before claiming the row,
+    // which is exactly what happens when R2 is not configured on this runtime.
+    recordingPipeline: {
+      r2: {
+        accountId: Boolean(process.env.R2_ACCOUNT_ID),
+        accessKeyId: Boolean(process.env.R2_ACCESS_KEY_ID),
+        secretAccessKey: Boolean(process.env.R2_SECRET_ACCESS_KEY),
+        bucket: process.env.R2_BUCKET ?? null,
+        configured:
+          Boolean(process.env.R2_ACCOUNT_ID) &&
+          Boolean(process.env.R2_ACCESS_KEY_ID) &&
+          Boolean(process.env.R2_SECRET_ACCESS_KEY) &&
+          Boolean(process.env.R2_BUCKET),
+      },
+      zoom: {
+        accountId: Boolean(process.env.ZOOM_ACCOUNT_ID),
+        clientId: Boolean(process.env.ZOOM_CLIENT_ID),
+        clientSecret: Boolean(process.env.ZOOM_CLIENT_SECRET),
+        webhookSecret: Boolean(process.env.ZOOM_WEBHOOK_SECRET_TOKEN),
+      },
+      hasCronSecret: Boolean(process.env.CRON_SECRET),
+    },
   });
 }
