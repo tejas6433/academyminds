@@ -96,6 +96,87 @@ export async function createClass(input: {
   return { ok: true };
 }
 
+/**
+ * Admin: edit a class in place. Without this the only way to correct a wrong
+ * time, day or teacher was to delete and recreate the class — which destroys
+ * its Zoom meeting and every recording attached to it.
+ *
+ * Schedule changes deliberately do NOT touch the existing Zoom meeting; the
+ * admin is told to recreate it, so we never silently orphan a live join link
+ * students may already hold.
+ */
+export async function updateClass(input: {
+  classId: number;
+  name: string;
+  batchName?: string;
+  gradeLevel: number;
+  teacherId: number | null;
+  teacherName: string;
+  dayOfWeek: number;
+  startTimeUtc: string;
+  durationMinutes: number;
+}) {
+  const actor = await assertRole(['admin']);
+
+  const before = await getClassById(input.classId);
+  if (!before) return { ok: false as const, error: 'Class not found.' };
+
+  const name = input.name.trim();
+  if (!name) return { ok: false as const, error: 'Class name is required.' };
+
+  await db
+    .update(classes)
+    .set({
+      name,
+      batchName: input.batchName?.trim() || null,
+      gradeLevel: input.gradeLevel,
+      teacherId: input.teacherId,
+      teacherName: input.teacherName,
+      dayOfWeek: input.dayOfWeek,
+      startTimeUtc: input.startTimeUtc,
+      durationMinutes: input.durationMinutes,
+    })
+    .where(eq(classes.id, input.classId));
+
+  const scheduleChanged =
+    before.dayOfWeek !== input.dayOfWeek ||
+    before.startTimeUtc !== input.startTimeUtc ||
+    before.durationMinutes !== input.durationMinutes;
+
+  await logAudit({
+    actorId: actor.id,
+    action: 'class.update',
+    targetType: 'class',
+    targetId: input.classId,
+    metadata: { name, scheduleChanged },
+  });
+
+  revalidatePath('/dashboard/admin');
+  revalidatePath('/dashboard/teacher');
+  return {
+    ok: true as const,
+    // Surfaced in the UI so the admin knows the Zoom invite is now stale.
+    scheduleChangedWithMeeting: scheduleChanged && Boolean(before.zoomMeetingId),
+  };
+}
+
+/** Admin: remove a student from a class. */
+export async function unenrollStudent(classId: number, studentId: number) {
+  const actor = await assertRole(['admin']);
+  await db
+    .delete(classEnrollments)
+    .where(and(eq(classEnrollments.classId, classId), eq(classEnrollments.userId, studentId)));
+  await logAudit({
+    actorId: actor.id,
+    action: 'enrollment.remove',
+    targetType: 'class',
+    targetId: classId,
+    metadata: { studentId },
+  });
+  revalidatePath('/dashboard/admin');
+  return { ok: true as const };
+}
+
 /** Admin: assign / reassign a teacher to a class. */
 export async function assignTeacher(classId: number, teacherId: number, teacherName: string) {
   const actor = await assertRole(['admin']);

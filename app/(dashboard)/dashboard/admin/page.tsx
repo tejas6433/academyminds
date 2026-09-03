@@ -7,6 +7,7 @@ import {
   getAllClasses,
   getUsersByRole,
   getPlatformStats,
+  getStudentsForClasses,
 } from '@/lib/db/queries';
 import { requireRole } from '@/lib/auth/guards';
 import { AdminClassForm } from '@/components/dashboard/admin-class-form';
@@ -16,6 +17,7 @@ import { DeleteClassButton } from '@/components/dashboard/delete-class-button';
 import { AdminZoomCell } from '@/components/dashboard/admin-zoom-cell';
 import { AdminEnrollCell } from '@/components/dashboard/admin-enroll-cell';
 import { WeeklyCalendar } from '@/components/dashboard/weekly-calendar';
+import { ClassManager } from '@/components/dashboard/class-manager';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -40,6 +42,10 @@ export default async function AdminDashboard() {
     getUsersByRole('teacher'),
     db.select().from(usersTable).where(isNull(usersTable.deletedAt)),
   ]);
+
+  // One batched query for every class roster, so the table can show enrolment
+  // counts and let an admin remove a student without an N+1.
+  const rosterByClass = await getStudentsForClasses(allClasses.map((c) => c.id));
 
   const studentOptions = allUsers
     .filter((u) => u.role === 'student')
@@ -160,8 +166,25 @@ export default async function AdminDashboard() {
                   <td className="py-3.5 px-5">
                     <AdminZoomCell classId={c.id} hasMeeting={Boolean(c.zoomMeetingId)} />
                   </td>
-                  <td className="py-3.5 px-5">
+                  <td className="py-3.5 px-5 align-top">
+                    <div className="text-[var(--am-ink-500)] mb-1">{(rosterByClass.get(c.id) ?? []).length} enrolled</div>
                     <AdminEnrollCell classId={c.id} students={studentOptions} />
+                    <div className="mt-1">
+                      <ClassManager
+                        cls={{
+                          id: c.id,
+                          name: c.name,
+                          batchName: c.batchName,
+                          gradeLevel: c.gradeLevel,
+                          teacherId: c.teacherId,
+                          dayOfWeek: c.dayOfWeek,
+                          startTimeUtc: c.startTimeUtc,
+                          durationMinutes: c.durationMinutes,
+                        }}
+                        teachers={teachers.map((t) => ({ id: t.id, name: t.name, email: t.email }))}
+                        roster={rosterByClass.get(c.id) ?? []}
+                      />
+                    </div>
                   </td>
                   <td className="py-3.5 px-5 text-right">
                     <DeleteClassButton classId={c.id} className={c.name} />
