@@ -14,6 +14,7 @@ import { AdminUserRow } from '@/components/dashboard/admin-user-row';
 import { AddTeacherForm } from '@/components/dashboard/add-teacher-form';
 import { DeleteClassButton } from '@/components/dashboard/delete-class-button';
 import { AdminZoomCell } from '@/components/dashboard/admin-zoom-cell';
+import { AdminEnrollCell } from '@/components/dashboard/admin-enroll-cell';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -50,6 +51,10 @@ export default async function AdminDashboard() {
     getUsersByRole('teacher'),
     db.select().from(usersTable).where(isNull(usersTable.deletedAt)),
   ]);
+
+  const studentOptions = allUsers
+    .filter((u) => u.role === 'student')
+    .map((u) => ({ id: u.id, name: u.name, email: u.email }));
 
   const statCards = [
     { label: 'Students', value: stats.students, kind: 'students' },
@@ -129,6 +134,7 @@ export default async function AdminDashboard() {
                 <th className="py-3.5 px-5 font-bold">Teacher</th>
                 <th className="py-3.5 px-5 font-bold">Schedule</th>
                 <th className="py-3.5 px-5 font-bold">Zoom</th>
+                <th className="py-3.5 px-5 font-bold">Students</th>
                 <th className="py-3.5 px-5 font-bold"></th>
               </tr>
             </thead>
@@ -143,6 +149,9 @@ export default async function AdminDashboard() {
                   <td className="py-3.5 px-5 text-[var(--am-ink-500)]">{DAY_NAMES[c.dayOfWeek]} {c.startTimeUtc.slice(0, 5)}</td>
                   <td className="py-3.5 px-5">
                     <AdminZoomCell classId={c.id} hasMeeting={Boolean(c.zoomMeetingId)} />
+                  </td>
+                  <td className="py-3.5 px-5">
+                    <AdminEnrollCell classId={c.id} students={studentOptions} />
                   </td>
                   <td className="py-3.5 px-5 text-right">
                     <DeleteClassButton classId={c.id} className={c.name} />

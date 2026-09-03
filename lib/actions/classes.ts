@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { db } from '@/lib/db/drizzle';
 import { classes, classEnrollments, recordings, users } from '@/lib/db/schema';
 import { getUser, getClassById } from '@/lib/db/queries';
@@ -255,6 +255,19 @@ export async function createTeacherAccount(input: { name: string; email: string 
 /** Admin: enroll a student into a class. */
 export async function enrollStudent(classId: number, studentId: number) {
   const actor = await assertRole(['admin']);
+
+  // Guard against enrolling the same student twice — there is no unique
+  // constraint on (class_id, user_id), so a repeated click would otherwise
+  // create duplicate rows and show the student twice on the roster.
+  const existing = await db
+    .select({ id: classEnrollments.id })
+    .from(classEnrollments)
+    .where(and(eq(classEnrollments.classId, classId), eq(classEnrollments.userId, studentId)))
+    .limit(1);
+  if (existing[0]) {
+    return { ok: true as const, alreadyEnrolled: true as const };
+  }
+
   await db.insert(classEnrollments).values({ classId, userId: studentId });
   await logAudit({
     actorId: actor.id,
