@@ -3,7 +3,12 @@
 // real children registered at sign-up and the live classes offered for each
 // child's grade — no fabricated attendance/billing data.
 import { requireRole } from '@/lib/auth/guards';
-import { getChildrenForParent, getClassesByGrade } from '@/lib/db/queries';
+import {
+  getChildrenForParent,
+  getClassesByGrade,
+  getClassesForStudent,
+  getRecordingsForStudent,
+} from '@/lib/db/queries';
 import { nextClassInstance, todaysClasses } from '@/lib/schedule';
 import { ParentDashboardView } from '@/components/dashboard/parent-dashboard-view';
 
@@ -22,7 +27,16 @@ export default async function ParentDashboard() {
 
   const children = await Promise.all(
     kids.map(async (k) => {
-      const classes = classesByGrade.get(k.gradeLevel) ?? [];
+      // If the child has a linked student login, show what they are ACTUALLY
+      // enrolled in. Fall back to the grade catalogue only when no account
+      // exists yet, so a parent still sees what is on offer.
+      const linked = k.studentUserId
+        ? await getClassesForStudent(k.studentUserId)
+        : null;
+      const recordings = k.studentUserId
+        ? await getRecordingsForStudent(k.studentUserId)
+        : [];
+      const classes = linked && linked.length > 0 ? linked : classesByGrade.get(k.gradeLevel) ?? [];
       const next = nextClassInstance(classes);
       const today = todaysClasses(classes);
       return {
@@ -33,6 +47,8 @@ export default async function ParentDashboard() {
         next: next ? { ...next, startsAt: next.startsAt.toISOString() } : null,
         today: today.map((c) => ({ ...c, startsAt: c.startsAt.toISOString() })),
         classCount: classes.length,
+        enrolled: Boolean(k.studentUserId && linked && linked.length > 0),
+        recordingCount: recordings.length,
       };
     })
   );

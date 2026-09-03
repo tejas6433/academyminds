@@ -1,9 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { db } from '@/lib/db/drizzle';
-import { classes, classEnrollments, recordings, users } from '@/lib/db/schema';
+import { classes, classEnrollments, recordings, users, children } from '@/lib/db/schema';
 import { getUser, getClassById } from '@/lib/db/queries';
 import { createZoomMeeting } from '@/lib/zoom';
 import { logAudit } from '@/lib/audit';
@@ -274,6 +274,33 @@ export async function createStudentAccount(input: {
     }
     return created;
   });
+
+  // Link this login to the parent's child record so the parent dashboard can
+  // show the classes the child is actually enrolled in. Links the oldest
+  // unlinked child for that parent — correct for the common single-child case,
+  // and an admin can re-point it in the database if a parent has several.
+  try {
+    const [parent] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.email, parentEmail))
+      .limit(1);
+    if (parent) {
+      const [child] = await db
+        .select({ id: children.id })
+        .from(children)
+        .where(and(eq(children.parentId, parent.id), isNull(children.studentUserId)))
+        .orderBy(children.id)
+        .limit(1);
+      if (child) {
+        await db.update(children).set({ studentUserId: student.id }).where(eq(children.id, child.id));
+      }
+    }
+  } catch (err) {
+    // Linking is a convenience, not a precondition — never fail account
+    // creation because the parent record could not be matched.
+    console.error('[createStudentAccount] could not link child record:', err);
+  }
 
   await logAudit({
     actorId: actor.id,

@@ -111,6 +111,10 @@ export const children = pgTable('children', {
   // Current math level at sign-up: 'struggling' | 'on-track' | 'ahead'.
   // Legacy rows may hold the pre-pivot subject values ('math'|'coding'|'both').
   subjectInterest: varchar('subject_interest', { length: 20 }).notNull().default('on-track'),
+  // Links this child record to the student login an admin created for them.
+  // Without it the parent dashboard could only show classes offered for the
+  // child's grade, not the ones they are actually enrolled in.
+  studentUserId: integer('student_user_id').references(() => users.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 

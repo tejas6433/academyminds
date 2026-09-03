@@ -27,6 +27,9 @@ interface Child {
   next: Instance | null;
   today: Instance[];
   classCount: number;
+  /** True once the child has a student login and real enrolments. */
+  enrolled: boolean;
+  recordingCount: number;
 }
 
 function toCalendar(c: Instance): CalendarClass {
@@ -135,6 +138,29 @@ export function ParentDashboardView({ greetingName, children }: { greetingName?:
                       ? `No classes are scheduled for Grade ${child.gradeLevel} yet.`
                       : 'No classes today — check back tomorrow.'}
                   </p>
+                </div>
+              )}
+
+              {!child.enrolled && (
+                <div
+                  className="am-card p-5 mt-4 text-sm"
+                  style={{ background: 'rgba(255,215,0,0.08)', border: '1px solid rgba(255,215,0,0.35)', color: '#946c00' }}
+                >
+                  These are the classes offered for Grade {child.gradeLevel}. Once we set up
+                  {' '}{child.name}&apos;s login, this will show their actual timetable — we&apos;ll email you the details.
+                </div>
+              )}
+
+              {child.enrolled && (
+                <div className="am-card p-5 mt-4 flex items-center justify-between gap-4 flex-wrap">
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: 'var(--am-navy)' }}>
+                      {child.recordingCount} class recording{child.recordingCount === 1 ? '' : 's'} available
+                    </p>
+                    <p className="text-xs text-[var(--am-ink-400)] mt-0.5">
+                      {child.name} can rewatch any class for 30 days from their own login.
+                    </p>
+                  </div>
                 </div>
               )}
             </>
