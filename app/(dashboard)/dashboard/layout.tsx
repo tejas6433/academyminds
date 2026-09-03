@@ -1,6 +1,7 @@
 // app/(dashboard)/dashboard/layout.tsx
 import Link from 'next/link';
 import { getUser } from '@/lib/db/queries';
+import { UserMenu } from '@/components/dashboard/user-menu';
 import { redirect } from 'next/navigation';
 
 // Assignments live in Google Classroom. Set GOOGLE_CLASSROOM_URL to the class
@@ -41,14 +42,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
             {user.role === 'admin' && (
               <Link href="/dashboard/admin" className="shrink-0 text-gray-300 hover:text-white text-sm transition-colors">Admin</Link>
             )}
-            <Link href="/dashboard/general" className="shrink-0 text-gray-300 hover:text-white text-sm transition-colors">Settings</Link>
           </nav>
-          <div
-            className="shrink-0 h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-            style={{ background: 'var(--am-purple)' }}
-          >
-            {user.email[0].toUpperCase()}
-          </div>
+          <UserMenu email={user.email} role={user.role} />
         </div>
       </header>
       <main className="flex-1">

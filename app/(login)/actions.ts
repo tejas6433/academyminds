@@ -379,10 +379,16 @@ export const resetPassword = validatedAction(resetPasswordSchema, async (data) =
 });
 
 export async function signOut() {
-  const user = (await getUser()) as User;
-  const userWithTeam = await getUserWithTeam(user.id);
-  await logActivity(userWithTeam?.teamId, user.id, ActivityType.SIGN_OUT);
+  // Tolerate an already-expired session: this previously cast the result to User
+  // and would throw on null, so signing out from a stale tab crashed.
+  const user = await getUser();
+  if (user) {
+    const userWithTeam = await getUserWithTeam(user.id);
+    await logActivity(userWithTeam?.teamId, user.id, ActivityType.SIGN_OUT);
+  }
   (await cookies()).delete('session');
+  // Without this the browser stays on a now-unauthenticated page.
+  redirect('/sign-in');
 }
 
 const updatePasswordSchema = z.object({

@@ -4,7 +4,9 @@ import { useState, useTransition } from 'react';
 import { setUserRole } from '@/lib/actions/classes';
 import { deleteUser } from '@/lib/actions/admin';
 
-const ROLES = ['student', 'parent', 'teacher', 'admin', 'member'];
+// 'member' was a leftover from the SaaS starter and grants nothing meaningful
+// here — every guard checks for student/parent/teacher/admin.
+const ROLES = ['student', 'parent', 'teacher', 'admin'];
 
 export function AdminUserRow({
   user,
