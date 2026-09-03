@@ -90,17 +90,20 @@ export function sendPasswordResetEmail(to: string, resetUrl: string) {
   });
 }
 
-/** Sent to a teacher when an admin creates their account. */
+/** Sent to a teacher or admin when their staff account is created. */
 export function sendTeacherCredentialsEmail(
   to: string,
-  teacher: { name: string; email: string; tempPassword: string }
+  teacher: { name: string; email: string; tempPassword: string; role?: 'teacher' | 'admin' }
 ) {
+  const isAdmin = teacher.role === 'admin';
   return sendEmail({
     to,
-    subject: 'Your AcademyMinds teacher account',
+    subject: `Your AcademyMinds ${isAdmin ? 'admin' : 'teacher'} account`,
     html: shell(
       `Welcome to the team, ${teacher.name} 👋`,
-      `Your teacher account is ready. Sign in to see your classes, start live sessions, and manage recordings.<br/><br/>
+      `Your ${isAdmin ? 'admin' : 'teacher'} account is ready. ${isAdmin
+        ? 'Sign in to manage classes, students, teachers and recordings.'
+        : 'Sign in to see your classes, start live sessions, and manage recordings.'}<br/><br/>
        <strong>Email:</strong> ${teacher.email}<br/>
        <strong>Temporary password:</strong> ${teacher.tempPassword}<br/><br/>
        Please change your password after the first sign-in.`,

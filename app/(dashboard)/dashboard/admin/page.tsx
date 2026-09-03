@@ -11,7 +11,7 @@ import {
 import { requireRole } from '@/lib/auth/guards';
 import { AdminClassForm } from '@/components/dashboard/admin-class-form';
 import { AdminUserRow } from '@/components/dashboard/admin-user-row';
-import { AddTeacherForm } from '@/components/dashboard/add-teacher-form';
+import { AddStaffForm } from '@/components/dashboard/add-staff-form';
 import { DeleteClassButton } from '@/components/dashboard/delete-class-button';
 import { AdminZoomCell } from '@/components/dashboard/admin-zoom-cell';
 import { AdminEnrollCell } from '@/components/dashboard/admin-enroll-cell';
@@ -165,7 +165,7 @@ export default async function AdminDashboard() {
 
       {/* Users & roles */}
       <h2 className="am-heading text-lg font-bold mb-3" style={{ color: 'var(--am-navy)' }}>Users &amp; Roles</h2>
-      <div className="mb-3"><AddTeacherForm /></div>
+      <div className="mb-3"><AddStaffForm /></div>
       <div className="am-card overflow-x-auto">
         <table className="w-full text-left min-w-[480px]">
           <thead>

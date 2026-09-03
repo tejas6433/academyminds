@@ -217,8 +217,15 @@ export async function createStudentAccount(input: {
  * Admin: create a teacher login and email the credentials to the teacher.
  * Saves the "sign up then get promoted" dance — the teacher can sign in directly.
  */
-export async function createTeacherAccount(input: { name: string; email: string }) {
+export async function createStaffAccount(input: {
+  name: string;
+  email: string;
+  role: 'teacher' | 'admin';
+}) {
   const actor = await assertRole(['admin']);
+  if (input.role !== 'teacher' && input.role !== 'admin') {
+    return { ok: false as const, error: 'Invalid role.' };
+  }
   const name = input.name.trim();
   const email = input.email.trim().toLowerCase();
 
@@ -234,22 +241,22 @@ export async function createTeacherAccount(input: { name: string; email: string 
   const tempPassword = randomBytes(9).toString('base64url');
   const passwordHash = await hashPassword(tempPassword);
 
-  const [teacher] = await db
+  const [created] = await db
     .insert(users)
-    .values({ name, email, passwordHash, role: 'teacher' })
+    .values({ name, email, passwordHash, role: input.role })
     .returning({ id: users.id });
 
   await logAudit({
     actorId: actor.id,
-    action: 'teacher.create',
+    action: input.role === 'admin' ? 'admin.create' : 'teacher.create',
     targetType: 'user',
-    targetId: teacher.id,
+    targetId: created.id,
   });
 
-  await sendTeacherCredentialsEmail(email, { name, email, tempPassword });
+  await sendTeacherCredentialsEmail(email, { name, email, tempPassword, role: input.role });
 
   revalidatePath('/dashboard/admin');
-  return { ok: true as const, teacherId: teacher.id, tempPassword };
+  return { ok: true as const, userId: created.id, tempPassword };
 }
 
 /** Admin: enroll a student into a class. */

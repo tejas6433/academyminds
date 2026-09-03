@@ -1,25 +1,27 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { createTeacherAccount } from '@/lib/actions/classes';
+import { createStaffAccount } from '@/lib/actions/classes';
 
-// Admin tool: create a teacher login directly (no self-signup + promote dance).
-export function AddTeacherForm() {
+// Create a teacher or an admin. Admins are for a business partner or a manager
+// who needs the full dashboard — same creation path, different granted role.
+export function AddStaffForm() {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [role, setRole] = useState<'teacher' | 'admin'>('teacher');
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
 
   function submit() {
     setResult(null);
     startTransition(async () => {
       try {
-        const res = await createTeacherAccount({ name, email });
+        const res = await createStaffAccount({ name, email, role });
         if (res.ok) {
           setResult({
             ok: true,
-            msg: `Teacher created for ${email}. Temp password: ${res.tempPassword} — also emailed. Share it if the email doesn't arrive.`,
+            msg: `${role === 'admin' ? 'Admin' : 'Teacher'} created for ${email}. Temp password: ${res.tempPassword} — also emailed. Share it if the email doesn't arrive.`,
           });
           setName('');
           setEmail('');
@@ -39,7 +41,7 @@ export function AddTeacherForm() {
         className="am-btn px-3 py-1.5 text-sm"
         style={{ border: '1px solid var(--am-hairline-strong)', color: 'var(--am-purple)' }}
       >
-        + Add teacher
+        + Add teacher or admin
       </button>
     );
   }
@@ -49,10 +51,19 @@ export function AddTeacherForm() {
 
   return (
     <div className="am-card p-4 mb-3">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
-        <input className={inputCls} style={inputStyle} placeholder="Teacher name" value={name} onChange={(e) => setName(e.target.value)} />
-        <input className={inputCls} style={inputStyle} placeholder="Teacher email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+        <input className={inputCls} style={inputStyle} placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} />
+        <input className={inputCls} style={inputStyle} placeholder="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <select className={inputCls} style={inputStyle} value={role} onChange={(e) => setRole(e.target.value as 'teacher' | 'admin')}>
+          <option value="teacher">Teacher</option>
+          <option value="admin">Admin (full access)</option>
+        </select>
       </div>
+      {role === 'admin' && (
+        <p className="text-xs mb-2 text-[var(--am-ink-500)]">
+          An admin can manage classes, students, teachers, billing views and recordings — the same access you have.
+        </p>
+      )}
       <div className="flex items-center gap-2">
         <button
           onClick={submit}

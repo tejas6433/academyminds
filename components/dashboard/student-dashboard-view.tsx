@@ -23,6 +23,8 @@ interface Props {
   next: Instance | null;
   today: Instance[];
   stats: { enrolled: number; subjects: number; recordings: number };
+  /** Admins see the full timetable rather than an enrolment-scoped view. */
+  isAdmin?: boolean;
 }
 
 function timeGreeting(): string {
@@ -46,7 +48,7 @@ function toCalendar(c: Instance): CalendarClass {
   };
 }
 
-export function StudentDashboardView({ greetingName, next, today, stats }: Props) {
+export function StudentDashboardView({ greetingName, next, today, stats, isAdmin = false }: Props) {
   const nextClass = next
     ? {
         name: next.name,
@@ -113,13 +115,21 @@ export function StudentDashboardView({ greetingName, next, today, stats }: Props
         <div className="am-card p-8 text-center">
           <p className="text-[var(--am-ink-500)]">
             {stats.enrolled === 0
-              ? 'You’re not enrolled in any classes yet.'
+              ? isAdmin
+                ? 'No classes exist yet.'
+                : 'You’re not enrolled in any classes yet.'
               : 'No classes scheduled for today.'}
           </p>
           {stats.enrolled === 0 && (
-            <Link href="/enquiry" className="am-btn am-btn-primary px-6 mt-4 text-sm">
-              Book a free trial
-            </Link>
+            isAdmin ? (
+              <Link href="/dashboard/admin" className="am-btn am-btn-primary px-6 mt-4 text-sm">
+                Create a class
+              </Link>
+            ) : (
+              <Link href="/enquiry" className="am-btn am-btn-primary px-6 mt-4 text-sm">
+                Book a free trial
+              </Link>
+            )
           )}
         </div>
       )}
