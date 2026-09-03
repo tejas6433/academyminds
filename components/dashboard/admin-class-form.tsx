@@ -25,7 +25,7 @@ export function AdminClassForm({ teachers }: { teachers: Teacher[] }) {
   const [error, setError] = useState('');
 
   const [name, setName] = useState('');
-  const [subject, setSubject] = useState<'math' | 'coding'>('math');
+  const [batchName, setBatchName] = useState('');
   const [grade, setGrade] = useState(6);
   const [teacherId, setTeacherId] = useState<string>('');
   const [day, setDay] = useState(1);
@@ -43,7 +43,7 @@ export function AdminClassForm({ teachers }: { teachers: Teacher[] }) {
       try {
         await createClass({
           name: name.trim(),
-          subject,
+          batchName: batchName.trim() || undefined,
           gradeLevel: grade,
           teacherId: teacher ? teacher.id : null,
           teacherName: teacher ? teacher.name ?? teacher.email : 'TBD',
@@ -89,10 +89,8 @@ export function AdminClassForm({ teachers }: { teachers: Teacher[] }) {
         </div>
 
         <div>
-          <label className="block am-eyebrow text-[var(--am-ink-400)] mb-1.5">Subject</label>
-          <select className={inputCls} style={ring} value={subject} onChange={(e) => setSubject(e.target.value as 'math' | 'coding')}>
-            <option value="math">Math</option>
-          </select>
+          <label className="block am-eyebrow text-[var(--am-ink-400)] mb-1.5">Batch name</label>
+          <input className={inputCls} style={ring} value={batchName} onChange={(e) => setBatchName(e.target.value)} placeholder="Morning Batch" />
         </div>
 
         <div>

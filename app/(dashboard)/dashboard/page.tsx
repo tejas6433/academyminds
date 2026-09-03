@@ -36,6 +36,7 @@ export default async function StudentDashboardPage() {
     startTimeUtc: c.startTimeUtc,
     durationMinutes: c.durationMinutes,
     teacherName: c.teacherName,
+    batchName: c.batchName,
     hasMeeting: Boolean(c.zoomMeetingId),
   }));
 

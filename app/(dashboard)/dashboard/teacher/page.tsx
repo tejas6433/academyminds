@@ -61,6 +61,7 @@ export default async function TeacherDashboard() {
             startTimeUtc: c.startTimeUtc,
             durationMinutes: c.durationMinutes,
             teacherName: c.teacherName,
+            batchName: c.batchName,
             hasMeeting: Boolean(c.zoomMeetingId),
           }))}
           emptyMessage="No classes assigned to you yet."

@@ -62,7 +62,7 @@ export async function createMeetingForClass(classId: number) {
 /** Admin: create a class. */
 export async function createClass(input: {
   name: string;
-  subject: 'math' | 'coding';
+  batchName?: string;
   gradeLevel: number;
   teacherId: number | null;
   teacherName: string;
@@ -74,7 +74,9 @@ export async function createClass(input: {
   const actor = await assertRole(['admin']);
   const [created] = await db.insert(classes).values({
     name: input.name,
-    subject: input.subject,
+    // Math-only programme: cohorts are distinguished by batchName, not subject.
+    subject: 'math',
+    batchName: input.batchName?.trim() || null,
     gradeLevel: input.gradeLevel,
     teacherId: input.teacherId,
     teacherName: input.teacherName,
@@ -88,7 +90,7 @@ export async function createClass(input: {
     action: 'class.create',
     targetType: 'class',
     targetId: created.id,
-    metadata: { name: input.name, gradeLevel: input.gradeLevel, teacherId: input.teacherId },
+    metadata: { name: input.name, batchName: input.batchName ?? null, gradeLevel: input.gradeLevel, teacherId: input.teacherId },
   });
   revalidatePath('/dashboard/admin');
   return { ok: true };

@@ -31,18 +31,6 @@ const StatIcon = ({ kind }: { kind: string }) => {
     default: return null;
   }
 };
-const SubjectMark = ({ subject }: { subject: string }) => (
-  <span
-    className="inline-flex h-6 w-6 items-center justify-center rounded-md text-[11px] font-bold align-middle mr-2"
-    style={subject === 'math'
-      ? { background: 'rgba(118,75,162,0.1)', color: 'var(--am-purple)' }
-      : { background: 'rgba(26,26,46,0.07)', color: 'var(--am-navy)' }}
-    aria-hidden
-  >
-    {subject === 'math' ? 'Σ' : '{}'}
-  </span>
-);
-
 export default async function AdminDashboard() {
   await requireRole(['admin']);
 
@@ -127,6 +115,7 @@ export default async function AdminDashboard() {
             startTimeUtc: c.startTimeUtc,
             durationMinutes: c.durationMinutes,
             teacherName: c.teacherName,
+            batchName: c.batchName,
             hasMeeting: Boolean(c.zoomMeetingId),
           }))}
           emptyMessage="No classes yet. Create one below and it will appear here."
@@ -149,6 +138,7 @@ export default async function AdminDashboard() {
             <thead>
               <tr className="am-eyebrow text-[var(--am-ink-400)]" style={{ background: 'rgba(118,75,162,0.03)' }}>
                 <th className="py-3.5 px-5 font-bold">Class</th>
+                <th className="py-3.5 px-5 font-bold">Batch</th>
                 <th className="py-3.5 px-5 font-bold">Grade</th>
                 <th className="py-3.5 px-5 font-bold">Teacher</th>
                 <th className="py-3.5 px-5 font-bold">Schedule</th>
@@ -161,8 +151,9 @@ export default async function AdminDashboard() {
               {allClasses.map((c) => (
                 <tr key={c.id} className="text-sm transition-colors hover:bg-[rgba(118,75,162,0.025)]" style={{ borderTop: '1px solid var(--am-hairline)' }}>
                   <td className="py-3.5 px-5 font-semibold" style={{ color: 'var(--am-navy)' }}>
-                    <SubjectMark subject={c.subject} />{c.name}
+                    {c.name}
                   </td>
+                  <td className="py-3.5 px-5 text-[var(--am-ink-500)]">{c.batchName ?? '—'}</td>
                   <td className="py-3.5 px-5 text-[var(--am-ink-500)]">{c.gradeLevel}</td>
                   <td className="py-3.5 px-5 text-[var(--am-ink-500)]">{c.teacherName}</td>
                   <td className="py-3.5 px-5 text-[var(--am-ink-500)]">{DAY_NAMES[c.dayOfWeek]} {c.startTimeUtc.slice(0, 5)}</td>

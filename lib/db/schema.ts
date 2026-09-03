@@ -77,7 +77,11 @@ export const invitations = pgTable('invitations', {
 export const classes = pgTable('classes', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 200 }).notNull(),
-  subject: varchar('subject', { length: 20 }).notNull(), // 'math' | 'coding'
+  // Retained for existing rows; the programme is math-only so every new class
+  // is created as 'math'. Cohorts are distinguished by batchName instead.
+  subject: varchar('subject', { length: 20 }).notNull(),
+  // Human label for the cohort, e.g. "Morning Batch" or "Batch A".
+  batchName: varchar('batch_name', { length: 60 }),
   gradeLevel: integer('grade_level').notNull(), // 5, 6, or 7
   teacherId: integer('teacher_id').references(() => users.id), // assigned teacher (platform user)
   teacherName: varchar('teacher_name', { length: 100 }).notNull(),

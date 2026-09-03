@@ -10,6 +10,7 @@ export interface CalendarEntry {
   startTimeUtc: string;   // 'HH:MM:SS'
   durationMinutes: number;
   teacherName: string;
+  batchName?: string | null;
   hasMeeting: boolean;
 }
 
@@ -104,6 +105,7 @@ export function WeeklyCalendar({
                     </div>
                     <div className="text-[11px] text-[var(--am-ink-400)] mt-0.5">
                       Grade {e.gradeLevel} · {e.durationMinutes} min
+                      {e.batchName ? ` · ${e.batchName}` : ''}
                     </div>
                     {!e.hasMeeting && (
                       <div className="text-[11px] mt-1 font-semibold" style={{ color: '#d97706' }}>
