@@ -3,6 +3,11 @@ import Link from 'next/link';
 import { getUser } from '@/lib/db/queries';
 import { redirect } from 'next/navigation';
 
+// Assignments live in Google Classroom. Set GOOGLE_CLASSROOM_URL to the class
+// invite/join link so students reach it from the same nav as everything else;
+// the link simply doesn't render until it's configured.
+const CLASSROOM_URL = process.env.GOOGLE_CLASSROOM_URL;
+
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser();
   if (!user) redirect('/sign-in');
@@ -17,6 +22,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <nav className="flex-1 min-w-0 flex items-center gap-4 sm:gap-5 overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             <Link href="/dashboard" className="shrink-0 text-gray-300 hover:text-white text-sm transition-colors">Schedule</Link>
             <Link href="/dashboard/recordings" className="shrink-0 text-gray-300 hover:text-white text-sm transition-colors">Recordings</Link>
+            {CLASSROOM_URL && (
+              <a
+                href={CLASSROOM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 text-gray-300 hover:text-white text-sm transition-colors"
+              >
+                Assignments
+              </a>
+            )}
             {(user.role === 'parent' || user.role === 'admin') && (
               <Link href="/dashboard/parent" className="shrink-0 text-gray-300 hover:text-white text-sm transition-colors">Parent View</Link>
             )}
