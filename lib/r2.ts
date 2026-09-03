@@ -39,6 +39,21 @@ function client(): S3Client {
 }
 
 /**
+ * Hard ceiling on a single uploaded object. A 90-minute class recording is
+ * typically well under 1 GB; anything past this is a runaway or a malformed
+ * file, and streaming it would quietly grow the storage bill. The upload is
+ * aborted mid-stream rather than after the fact, so we never pay to store it.
+ */
+export const MAX_UPLOAD_BYTES = 3 * 1024 * 1024 * 1024; // 3 GB
+
+export class UploadTooLargeError extends Error {
+  constructor(limit: number) {
+    super(`Upload exceeded the ${Math.round(limit / 1024 / 1024)} MB limit and was aborted.`);
+    this.name = 'UploadTooLargeError';
+  }
+}
+
+/**
  * Stream an arbitrary-length body straight into R2 using multipart upload.
  * `lib-storage`'s Upload buffers only one part (default 5 MB) at a time, so a
  * 1 GB lecture never sits in memory — this is what keeps the transfer from
@@ -56,6 +71,12 @@ export async function uploadStreamToR2(
   const counter = new Transform({
     transform(chunk, _enc, cb) {
       sizeBytes += chunk.length;
+      if (sizeBytes > MAX_UPLOAD_BYTES) {
+        // Fail the stream so the multipart upload aborts instead of continuing
+        // to push an oversized object into storage.
+        cb(new UploadTooLargeError(MAX_UPLOAD_BYTES));
+        return;
+      }
       cb(null, chunk);
     },
   });
