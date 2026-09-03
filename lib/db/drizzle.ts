@@ -18,5 +18,33 @@ if (!url && !isBuildPhase) {
   throw new Error('POSTGRES_URL environment variable is not set');
 }
 
-export const client = postgres(url ?? 'postgres://build:build@127.0.0.1:5432/build');
+// Serverless connection settings.
+//
+// Every Vercel invocation can spin up a fresh instance, and each one opening its
+// own pool exhausts the database's connection limit fast ("max clients reached").
+// So: exactly one connection per instance, and let it close when idle rather
+// than holding the slot open.
+//
+// prepare:false is REQUIRED when talking to a transaction-mode pooler
+// (Supabase port 6543 / pgbouncer): prepared statements are bound to a single
+// backend connection, which transaction pooling does not guarantee you keep.
+function createClient(connectionString: string) {
+  return postgres(connectionString, {
+    max: 1,
+    idle_timeout: 20,
+    connect_timeout: 10,
+    prepare: false,
+  });
+}
+
+// Reuse the client across hot reloads in development. Without this, every HMR
+// cycle leaks another connection until the pool is full.
+const globalForDb = globalThis as unknown as { __amClient?: ReturnType<typeof createClient> };
+
+export const client =
+  globalForDb.__amClient ??
+  createClient(url ?? 'postgres://build:build@127.0.0.1:5432/build');
+
+if (process.env.NODE_ENV !== 'production') globalForDb.__amClient = client;
+
 export const db = drizzle(client, { schema });
