@@ -27,18 +27,32 @@ const iconMap: Record<ActivityType, LucideIcon> = {
   [ActivityType.ACCEPT_INVITATION]: CheckCircle,
 };
 
-function getRelativeTime(date: Date) {
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+// Relative time down to the right unit. The old version pluralised blindly
+// ("1 hours ago"), and anything past a week collapsed to a bare date with no
+// sense of how long ago that was.
+const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
+  ['year', 31536000],
+  ['month', 2592000],
+  ['week', 604800],
+  ['day', 86400],
+  ['hour', 3600],
+  ['minute', 60],
+];
 
-  if (diffInSeconds < 60) return 'just now';
-  if (diffInSeconds < 3600)
-    return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-  if (diffInSeconds < 86400)
-    return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-  if (diffInSeconds < 604800)
-    return `${Math.floor(diffInSeconds / 86400)} days ago`;
-  return date.toLocaleDateString();
+const RTF = new Intl.RelativeTimeFormat('en-CA', { numeric: 'auto' });
+
+function getRelativeTime(date: Date) {
+  // Clamp at 0: a row written a second in the future (clock skew between the
+  // app server and Postgres) should read "just now", not "in 1 minute".
+  const seconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+  if (seconds < 60) return 'just now';
+
+  for (const [unit, secondsPer] of UNITS) {
+    if (seconds >= secondsPer) {
+      return RTF.format(-Math.floor(seconds / secondsPer), unit);
+    }
+  }
+  return 'just now';
 }
 
 function formatAction(action: ActivityType): string {
@@ -99,7 +113,10 @@ export default async function ActivityPage() {
                         {formattedAction}
                         {log.ipAddress && ` from IP ${log.ipAddress}`}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p
+                        className="text-xs text-gray-500"
+                        title={new Date(log.timestamp).toLocaleString('en-CA')}
+                      >
                         {getRelativeTime(new Date(log.timestamp))}
                       </p>
                     </div>
