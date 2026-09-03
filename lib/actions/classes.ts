@@ -327,6 +327,52 @@ export async function deleteClass(classId: number) {
   return { ok: true as const };
 }
 
+/**
+ * Admin: permanently delete a single recording — the stored video and the row.
+ * Hiding a recording only removes it from view; this is the path for a genuine
+ * privacy incident where the file itself must not continue to exist.
+ *
+ * The stored object is removed first and a failure is surfaced rather than
+ * swallowed: if we cannot prove the video is gone, the row stays so the delete
+ * can be retried (and the retention sweep will try again later).
+ */
+export async function deleteRecording(recordingId: number) {
+  const actor = await assertRole(['admin']);
+
+  const [rec] = await db
+    .select({ id: recordings.id, r2Key: recordings.r2Key, title: recordings.title })
+    .from(recordings)
+    .where(eq(recordings.id, recordingId))
+    .limit(1);
+  if (!rec) return { ok: false as const, error: 'Recording not found.' };
+
+  if (rec.r2Key) {
+    try {
+      await deleteFromR2(rec.r2Key);
+    } catch (err) {
+      console.error(`[deleteRecording] storage delete failed for ${rec.r2Key}:`, err);
+      return {
+        ok: false as const,
+        error: 'Could not delete the stored video. The recording was left in place — try again.',
+      };
+    }
+  }
+
+  await db.delete(recordings).where(eq(recordings.id, recordingId));
+
+  await logAudit({
+    actorId: actor.id,
+    action: 'recording.delete',
+    targetType: 'recording',
+    targetId: recordingId,
+    metadata: { title: rec.title, r2Key: rec.r2Key ?? null },
+  });
+
+  revalidatePath('/dashboard/recordings');
+  revalidatePath('/dashboard/teacher');
+  return { ok: true as const };
+}
+
 /** Teacher or admin: toggle a recording's visibility to students. */
 export async function setRecordingPublished(recordingId: number, published: boolean) {
   const actor = await assertRole(['teacher', 'admin']);

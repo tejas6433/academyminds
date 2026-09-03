@@ -1,5 +1,6 @@
 // app/(dashboard)/dashboard/recordings/page.tsx
 import { redirect } from 'next/navigation';
+import { DeleteRecordingButton } from '@/components/dashboard/delete-recording-button';
 import {
   getUser,
   getRecordingsForStudent,
@@ -78,12 +79,12 @@ export default async function RecordingsPage() {
 
             if (ready && href) {
               return (
+                <div key={r.id} className="flex items-center gap-3">
                 <a
-                  key={r.id}
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="am-card am-card-hover flex items-center justify-between gap-4 p-5"
+                  className="am-card am-card-hover flex-1 min-w-0 flex items-center justify-between gap-4 p-5"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     {icon}
@@ -94,6 +95,8 @@ export default async function RecordingsPage() {
                   </div>
                   <span className="text-sm font-bold whitespace-nowrap" style={{ color: 'var(--am-purple)' }}>Watch →</span>
                 </a>
+                {user.role === 'admin' && <DeleteRecordingButton recordingId={r.id} title={r.title} />}
+                </div>
               );
             }
 
@@ -106,8 +109,11 @@ export default async function RecordingsPage() {
                     {meta}
                   </div>
                 </div>
-                <span className="text-xs font-semibold whitespace-nowrap text-[var(--am-ink-400)]">
-                  {processing ? 'Processing…' : 'Unavailable'}
+                <span className="flex items-center gap-3 shrink-0">
+                  <span className="text-xs font-semibold whitespace-nowrap text-[var(--am-ink-400)]">
+                    {processing ? 'Processing…' : 'Unavailable'}
+                  </span>
+                  {user.role === 'admin' && <DeleteRecordingButton recordingId={r.id} title={r.title} />}
                 </span>
               </div>
             );
